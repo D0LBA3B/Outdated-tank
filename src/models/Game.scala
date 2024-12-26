@@ -3,8 +3,8 @@ package models
 import hevs.graphics.FunGraphics
 
 class Game(val name: String, private var grid: Array[Array[Cell]]){
-  private var cellSize :Int = 50; // Define de size of length TODO: Remove it later it only helps for debbugging
-  private var fg :FunGraphics = new FunGraphics(width = grid.length * cellSize, height = grid(0).length * cellSize)
+  private var cellSize :Int = 10; // Define de size of length TODO: Remove it later it only helps for debbugging
+  private var fg :FunGraphics = new FunGraphics(width = grid(0).length * cellSize , height = grid.length * cellSize)
   var isOver: Boolean = false
 
   def drawGrid(): Unit= {
