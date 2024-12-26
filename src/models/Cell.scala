@@ -1,5 +1,11 @@
 package models
 
-class Cell(var T: Object) {
+import java.awt.Color
 
+trait CellInterface {
+  def getColor: Color
+}
+
+class Cell(var cellType: CellInterface) {
+  def getColor: Color = cellType.getColor
 }
