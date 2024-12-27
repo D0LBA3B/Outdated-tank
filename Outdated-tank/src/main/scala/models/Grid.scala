@@ -23,6 +23,8 @@ class Grid(cells: Array[Array[Cell]]) {
     }
   }
 
+  def getFG(): FunGraphics = fg
+
   def addPlayer(p: Player): Unit = {
     if (!players.contains(p)) {
       players += p

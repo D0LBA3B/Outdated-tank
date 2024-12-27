@@ -1,5 +1,7 @@
 package models
 
+import hevs.graphics.FunGraphics
+
 import java.awt.Color
 
 class Game(val name: String, val grid: Grid) {
@@ -10,10 +12,12 @@ class Game(val name: String, val grid: Grid) {
     grid.addPlayer(michel) // TMP
 
     grid.drawGrid()
-    while (true) {
+    /*while (true) {
       grid.update()
       //TODO KEY EVENTS? - POSITIONS
       Thread.sleep(50)
-    }
+    }*/
   }
+
+  def getFG(): FunGraphics = grid.getFG()
 }

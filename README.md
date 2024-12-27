@@ -9,3 +9,10 @@ In **Outdated Tank**, players control tanks that fight for dominance on a grid-b
 - Each tank moves across a 2D grid, aiming to outwit and outshoot opponents.
 - Firepower is unlimited, but you have a cooldown limit
 - Destroy other tanks and claim the grid as your own!
+
+## Technical Details
+
+- **Scala Version**: 2.13.14
+- **SBT Version**: 1.10.7 ([Download SBT](https://www.scala-sbt.org/download/))
+
+Available on an online emulator: [outdated-tank.local-host.dev](https://outdated-tank.local-host.dev/)
