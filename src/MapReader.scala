@@ -1,9 +1,6 @@
 import models.{Cell, Terrain, Wall}
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 
-// Class for the object structure in the JSON.
-case class CellInfo(t: String, hp: Int)
-
 object MapReader {
   def ReadJson(fileName: String): Array[Array[Cell]] = {
     val jsonContent = scala.io.Source.fromFile(s"./res/$fileName")
@@ -18,7 +15,6 @@ object MapReader {
       row.as[List[JsValue]].zipWithIndex.foreach { case (cell, j) =>
         val cellObj: JsObject = cell.as[JsObject]
         val cellType: String = (cellObj \ "t").as[String]
-        println(s"$i , $j")
 
         // Create object type
         cellType match {
