@@ -1,4 +1,4 @@
-import models.{Cell, Terrain, Wall}
+import models.{Cell, OpenSpace, Terrain, Wall}
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 
 object MapReader {
@@ -20,11 +20,9 @@ object MapReader {
         cellType match {
           case "W" =>
             val cellHp: Int= (cellObj \ "hp").as[Int]
-            outputArray(i)(j) = new Cell(new Wall(hp=cellHp))
-          case "T" =>
-            outputArray(i)(j) = new Cell(new Terrain())
+            outputArray(i)(j) = new Cell(terrain = Wall(cellHp))
           case _ =>
-            outputArray(i)(j) = new Cell(new Terrain()) // Terrain by default
+            outputArray(i)(j) = new Cell(terrain = OpenSpace) // Terrain by default
         }
       }
     }

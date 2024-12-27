@@ -1,4 +1,4 @@
-import models.{Cell, Game, Terrain, Wall}
+import models.{Cell, Game, Grid, Player, Terrain}
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -8,9 +8,8 @@ object Main {
 
     val game :Game = new Game(
       name = "An epic battle",
-      grid = MapReader.ReadJson("map1.json")
+      grid = new Grid(MapReader.ReadJson("map1.json"))
     )
-
-    game.drawGrid()
+    game.start()
   }
 }

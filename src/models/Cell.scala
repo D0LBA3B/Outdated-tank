@@ -1,11 +1,10 @@
 package models
 
-import java.awt.Color
-
-trait CellInterface {
-  def getColor: Color
-}
-
-class Cell(var cellType: CellInterface) {
-  def getColor: Color = cellType.getColor
+class Cell(var terrain: Terrain, var maybeTank: Option[Tank] = None) {
+  def getColor: java.awt.Color = {
+    maybeTank match {
+      case Some(tank) => tank.color
+      case None => terrain.getColor
+    }
+  }
 }

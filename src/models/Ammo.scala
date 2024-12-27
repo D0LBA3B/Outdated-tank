@@ -1,25 +1,18 @@
 package models
+import scala.math.{cos, sin, toRadians}
 
-import java.util.Date
+class Ammo(var position: Position,
+            var angle: Double,
+            var velocity: Double,
+            var damage: Int = 10,
+            var size: Int,
+            val shotOn: Long,
+            var rebounce: Int) {
 
-class Ammo(
-            private val damage: Int,
-            private var rebounce: Int,
-            private var posX: Int,
-            private var posY: Int,
-            private var angle: Int,
-            private var size: Int,
-            private val shotOn: Date
-          ) {
-
-  def hasHitWall(): Unit = {
-    // Reduce rebounce
-
-    // Change angle
-  }
-
-  def hasHitPlayer(): Unit = {
-    // Get player and reduce his HP
-    
+  def move(): Unit = {
+    val rad = toRadians(angle)
+    position = position.copy(
+      x = position.x + cos(rad) * velocity,
+      y = position.y + sin(rad) * velocity)
   }
 }
