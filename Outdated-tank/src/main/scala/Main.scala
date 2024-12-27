@@ -3,8 +3,9 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpEntity, MediaTypes}
 import akka.http.scaladsl.server.Directives._
-import akka.stream.ActorMaterializer
+import akka.stream.Materializer
 import models.{Game, Grid}
+
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
 import scala.concurrent.duration.DurationInt
@@ -12,8 +13,7 @@ import scala.concurrent.duration.DurationInt
 object Main {
   def main(args: Array[String]): Unit = {
     implicit val system: ActorSystem = ActorSystem("game-server")
-    implicit val materializer: ActorMaterializer = ActorMaterializer()
-    implicit val executionContext = system.dispatcher
+    implicit val materializer: Materializer = Materializer(system)
 
     println("Hello world!")
     println("We are ready for the war")
