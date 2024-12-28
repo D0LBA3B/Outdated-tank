@@ -19,10 +19,8 @@ object Main {
     println("Hello world!")
     println("We are ready for the war")
 
-    val game: Game = new Game(
-      name = "An epic battle",
-      grid = new Grid(MapReader.ReadJson("map1.json"))
-    )
+    val config = GameConfig.load()
+    val game: Game = new Game(config)
     game.start()
 
     // Define HTTP routes
