@@ -55,7 +55,7 @@ class Grid(cells: Array[Array[Cell]]) {
         tank.projectiles.filterInPlace(_.damage > 0)
       }
     }
-}
+  }
 
   def drawGrid(): Unit = {
     for (rowIndex <- cells.indices) {
