@@ -1,4 +1,4 @@
-package models
+package isc.game.outdatedtank.models
 
 class Cell(var terrain: Terrain, var maybeTank: Option[Tank] = None) {
   def getColor: java.awt.Color = {

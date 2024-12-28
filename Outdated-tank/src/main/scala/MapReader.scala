@@ -1,3 +1,5 @@
+package isc.game.outdatedtank
+
 import models.{Cell, OpenSpace, Terrain, Wall}
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 

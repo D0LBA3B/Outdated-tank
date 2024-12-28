@@ -1,3 +1,5 @@
+package isc.game.outdatedtank
+
 import java.awt.{Rectangle, Robot, Toolkit}
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream

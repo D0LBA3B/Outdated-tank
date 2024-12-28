@@ -1,4 +1,4 @@
-package models
+package isc.game.outdatedtank.models
 
 import hevs.graphics.FunGraphics
 import scala.collection.mutable.ListBuffer

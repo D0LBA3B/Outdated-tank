@@ -1,4 +1,4 @@
-package models
+package isc.game.outdatedtank.models
 
 import java.awt.Color
 

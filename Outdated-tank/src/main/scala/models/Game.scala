@@ -1,7 +1,6 @@
-package models
+package isc.game.outdatedtank.models
 
 import hevs.graphics.FunGraphics
-
 import java.awt.Color
 
 class Game(val name: String, val grid: Grid) {

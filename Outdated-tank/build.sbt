@@ -9,7 +9,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json" % "2.10.6",
   "org.slf4j" % "slf4j-api" % "2.0.12",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.17.0",
-  "ch.qos.logback" % "logback-classic" % "1.5.6"
+  "ch.qos.logback" % "logback-classic" % "1.5.6",
+  "com.typesafe" % "config" % "1.4.3"
 )
 
 Compile / unmanagedClasspath += baseDirectory.value / "lib" / "fungraphics-1.5.15.jar"
@@ -17,5 +18,5 @@ Compile / unmanagedClasspath += baseDirectory.value / "lib" / "fungraphics-1.5.1
 lazy val root = (project in file("."))
   .settings(
     name := "OutdatedTank",
-    idePackagePrefix := Some("ch.ISC.OutdatedTank")
+    idePackagePrefix := Some("isc.game.outdatedtank")
   )

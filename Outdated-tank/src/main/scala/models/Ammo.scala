@@ -1,4 +1,4 @@
-package models
+package isc.game.outdatedtank.models
 
 class Ammo(var position: Position,
             var angle: Int,
