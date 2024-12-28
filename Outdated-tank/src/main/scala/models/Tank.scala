@@ -8,7 +8,7 @@ class Tank(var position: Position,
 
   val projectiles: collection.mutable.ListBuffer[Ammo] = collection.mutable.ListBuffer.empty
 
-  def move(dx: Double, dy: Double): Unit = {
+  def move(dx: Int, dy: Int): Unit = {
     position.x += dx
     position.y += dy
   }
