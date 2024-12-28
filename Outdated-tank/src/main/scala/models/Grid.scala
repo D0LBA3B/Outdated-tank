@@ -12,10 +12,12 @@ class Grid(cells: Array[Array[Cell]]) {
   private var fg : FunGraphics = new FunGraphics(width = cells(0).length * cellSize , height = cells.length * cellSize)
 
   def isWallAt(pos: Position): Boolean = {
-    val ix = pos.x.toInt
-    val iy = pos.y.toInt
-    if (!inBounds(pos)) false
-    else {
+    val ix: Int = pos.x / cellSize
+    val iy: Int = pos.y / cellSize
+
+    if (!inBounds(pos)) {
+      true
+    } else {
       cells(iy)(ix).terrain match {
         case Wall(_) => true
         case _       => false
@@ -38,7 +40,7 @@ class Grid(cells: Array[Array[Cell]]) {
   }
 
   private def inBounds(position: Position): Boolean = {
-    position.x >= 0 && position.x < width && position.y >= 0 && position.y < height
+    position.x >= 0 && position.x < width * cellSize && position.y >= 0 && position.y < height * cellSize
   }
 
   def update(): Unit = {
@@ -46,9 +48,8 @@ class Grid(cells: Array[Array[Cell]]) {
       for (tank <- player.tanks) {
         for (ammo <- tank.projectiles) {
           ammo.move()
-          if (checkWallCollision(ammo)) {
-            println("BOOOM WALLLL !")
-            ammo.damage = 0
+          if(isWallAt(ammo.position)){
+            println(s"Collision with wall at X:${ammo.position.x} Y:${ammo.position.y}")
           }
           checkTankCollision(ammo)
         }
@@ -98,8 +99,6 @@ class Grid(cells: Array[Array[Cell]]) {
         (py == 5 && px >= 3 && px <= 6)
     ) true else false
   }
-
-  private def checkWallCollision(ammo: Ammo): Boolean = inBounds(ammo.position) && isWallAt(ammo.position)
 
   private def checkTankCollision(ammo: Ammo): Unit = {
     val radius = 0.5
