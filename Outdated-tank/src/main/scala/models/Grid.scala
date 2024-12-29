@@ -9,7 +9,8 @@ class Grid(cells: Array[Array[Cell]]) {
   val width: Int  = if (height > 0) cells(0).length else 0
   val cellSize: Int = GameConfig.get.resolution.cellSize
   val players: ListBuffer[Player] = ListBuffer()
-  private var fg : FunGraphics = new FunGraphics(width = cells(0).length * cellSize , height = cells.length * cellSize)
+  val fg : FunGraphics = Game.getWindow(width = cells(0).length * cellSize , height = cells.length * cellSize); //new FunGraphics(width = cells(0).length * cellSize , height = cells.length * cellSize)
+  fg.displayFPS(true)
 
   def isWallAt(pos: Position): Boolean = {
     val ix: Int = pos.x / cellSize
@@ -24,8 +25,6 @@ class Grid(cells: Array[Array[Cell]]) {
       }
     }
   }
-
-  def getFG(): FunGraphics = fg
 
   private def inBounds(position: Position): Boolean = {
     position.x >= 0 && position.x < width * cellSize && position.y >= 0 && position.y < height * cellSize

@@ -20,8 +20,7 @@ object Main {
     println("Hello world!")
     println("We are ready for the war")
 
-    val config = GameConfig.get
-    val game: Game = new Game(config)
+    val game: Game = Game.getInstance(GameConfig.get)
     game.start()
 
     // Define HTTP routes
@@ -29,7 +28,7 @@ object Main {
       path("game") {
         get {
           val baos = new ByteArrayOutputStream()
-          ImageIO.write(game.getFG().frontBuffer, "png", baos) // Capture the front buffer of FunGraphics as a PNG
+          ImageIO.write(Game.getWindow().frontBuffer, "png", baos) // Capture the front buffer of FunGraphics as a PNG
           complete(HttpEntity(MediaTypes.`image/png`, baos.toByteArray))
         }
       } ~
