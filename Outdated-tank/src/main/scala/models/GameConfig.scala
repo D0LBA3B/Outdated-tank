@@ -23,9 +23,10 @@ case class PlayerConfig(name: String, color: Color, controls: ControlsConfig)
 case class GameConfig(resolution: Resolution, map: Battlefield, players: Seq[PlayerConfig])
 
 // https://medium.com/@ramkarnani24/reading-configurations-in-scala-f987f839f54d
-// TODO: Check if it's possible to manage configuration like IOptions<> in C#
 object GameConfig {
-  def load(): GameConfig = {
+  private lazy val instance: GameConfig = load()
+
+  private def load(): GameConfig = {
     val config = ConfigFactory.load()
 
     val resolution = Resolution(
@@ -56,6 +57,8 @@ object GameConfig {
 
     GameConfig(resolution = resolution, map = battlefield, players = players)
   }
+
+  def get: GameConfig = instance
 
   private def AWTcolorconverter(input: String): Color = {
     try {

@@ -1,12 +1,13 @@
 package isc.game.outdatedtank
 
 import ScreenCapture.captureFrame
+import models.{Game, GameConfig}
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpEntity, MediaTypes}
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
-import isc.game.outdatedtank.models._
+
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
 import scala.concurrent.duration.DurationInt
@@ -19,7 +20,7 @@ object Main {
     println("Hello world!")
     println("We are ready for the war")
 
-    val config = GameConfig.load()
+    val config = GameConfig.get
     val game: Game = new Game(config)
     game.start()
 

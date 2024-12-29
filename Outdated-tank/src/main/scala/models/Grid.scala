@@ -7,7 +7,7 @@ import scala.math.hypot
 class Grid(cells: Array[Array[Cell]]) {
   val height: Int = cells.length
   val width: Int  = if (height > 0) cells(0).length else 0
-  val cellSize: Int = 10
+  val cellSize: Int = GameConfig.get.resolution.cellSize
   val players: ListBuffer[Player] = ListBuffer()
   private var fg : FunGraphics = new FunGraphics(width = cells(0).length * cellSize , height = cells.length * cellSize)
 
