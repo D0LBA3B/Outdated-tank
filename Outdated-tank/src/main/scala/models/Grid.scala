@@ -50,8 +50,9 @@ class Grid(cells: Array[Array[Cell]]) {
           ammo.move()
           if(isWallAt(ammo.position)){
             println(s"Collision with wall at X:${ammo.position.x} Y:${ammo.position.y}")
+            ammo.bounce()
           }
-          checkTankCollision(ammo)
+          //checkTankCollision(ammo)
         }
         tank.projectiles.filterInPlace(_.damage > 0)
       }
