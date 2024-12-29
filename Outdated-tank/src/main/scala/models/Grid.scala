@@ -27,18 +27,6 @@ class Grid(cells: Array[Array[Cell]]) {
 
   def getFG(): FunGraphics = fg
 
-  def addPlayer(p: Player): Unit = {
-    if (!players.contains(p)) {
-      players += p
-
-      p.tanks.foreach(tank => {
-        if (inBounds(tank.position)) {
-          cells(tank.position.y.toInt)(tank.position.x.toInt).maybeTank = Some(tank)
-        }
-      })
-    }
-  }
-
   private def inBounds(position: Position): Boolean = {
     position.x >= 0 && position.x < width * cellSize && position.y >= 0 && position.y < height * cellSize
   }
@@ -51,12 +39,31 @@ class Grid(cells: Array[Array[Cell]]) {
           if(isWallAt(ammo.position)){
             println(s"Collision with wall at X:${ammo.position.x} Y:${ammo.position.y}")
             ammo.bounce()
+            ammo.move()
           }
           //checkTankCollision(ammo)
         }
         tank.projectiles.filterInPlace(_.damage > 0)
       }
     }
+    updateCells()
+    drawGrid()
+  }
+
+  private def updateCells(): Unit = {
+    players.foreach(p => {
+      p.tanks.foreach(tank => {
+        if (inBounds(tank.position)) {
+          cells(tank.position.y)(tank.position.x).maybeTank = Some(tank) //TODO: Make the same as projectiles here
+          tank.projectiles.foreach(a => {
+            // Avoid outOfBounds
+            val iX = if(a.position.x / cellSize >= cells.head.length) 74 else a.position.x / cellSize
+            val iY = if(a.position.y / cellSize >= cells.length) 74 else a.position.y / cellSize
+            cells(iY)(iX).maybeAmmo = Some(a)
+          })
+        }
+      })
+    })
   }
 
   def drawGrid(): Unit = {
@@ -77,9 +84,15 @@ class Grid(cells: Array[Array[Cell]]) {
             } else {
               fg.setColor(cell.terrain.getColor)
             }
-          } else {
-            fg.setColor(cell.terrain.getColor)
+          } else if(cell.maybeAmmo.isDefined){
+            if(xPixel == cell.maybeAmmo.get.position.x &&
+               yPixel == cell.maybeAmmo.get.position.y){
+              fg.setColor(cell.maybeAmmo.get.projectileColor)
+            } else {
+              fg.setColor(cell.terrain.getColor)
+            }
           }
+
           fg.setPixel(xPixel, yPixel)
         }
       }

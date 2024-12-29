@@ -14,7 +14,7 @@ class Tank(var position: Position,
   }
 
   def fire(angle: Int): Unit = {
-    val newAmmo = new Ammo(position=position.copy(),angle=angle,damage = 10,size = 1, shotOn=System.currentTimeMillis(), rebounce = 10)
+    val newAmmo = new Ammo(position=position.copy(),angle=angle,damage = 10,size = 1, shotOn=System.currentTimeMillis(), rebounce = 10, Color.black)
     projectiles += newAmmo
   }
 

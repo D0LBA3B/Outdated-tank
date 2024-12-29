@@ -15,14 +15,20 @@ class Game(val config: GameConfig) {
     config.players.foreach(player => {
       var gamePlayer = new Player(player.name, player.color)
       gamePlayer.tanks.addOne(new Tank(position = new Position(tmpI, tmpI), color = player.color))
-      grid.addPlayer(gamePlayer)
+      grid.players.addOne(gamePlayer)
       tmpI += 5
     })
 
     grid.drawGrid()
+    var count = 1
     while (isGameOver) {
       grid.update()
-      Thread.sleep(50)
+      if (count > 0){
+        grid.players.head.tanks.head.fire(30)
+        count += -1
+      }
+
+      Thread.sleep(10)
     }
   }
 

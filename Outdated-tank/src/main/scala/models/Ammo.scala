@@ -1,11 +1,15 @@
 package isc.game.outdatedtank.models
 
+import java.awt.Color
+
 class Ammo(var position: Position,
             var angle: Int,
             var damage: Int = 10,
             var size: Int,
             val shotOn: Long,
-            var rebounce: Int) {
+            var rebounce: Int,
+            var projectileColor: Color
+          ){
 
   private val movement: Map[Int, (Int,Int)] = Map(
     0 -> (2, 0),
@@ -42,9 +46,8 @@ class Ammo(var position: Position,
     var hitType: String = ""
 
     if(iX < iY) hitType = "vertical"
-    if(iY < iX) hitType = "horizontal"
-    if(iY == iX) hitType = "both"
-
+    else if(iY < iX) hitType = "horizontal"
+    else if(iY == iX) hitType = "both"
 
     var (dx, dy) = movement.getOrElse(angle, (2, 0)) // by default, get angle 0
 
