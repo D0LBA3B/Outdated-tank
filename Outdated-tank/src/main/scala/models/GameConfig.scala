@@ -8,7 +8,7 @@ import scala.jdk.CollectionConverters._
 
 case class Resolution(cellSize: Int)
 
-case class Map(name: String, terrainColor: String)
+case class Battlefield(name: String, terrainColor: String)
 
 case class ControlsConfig(moveUp: String,
                            moveDown: String,
@@ -20,7 +20,7 @@ case class ControlsConfig(moveUp: String,
 
 case class PlayerConfig(name: String, color: Color, controls: ControlsConfig)
 
-case class GameConfig(resolution: Resolution, map: Map, players: Seq[PlayerConfig])
+case class GameConfig(resolution: Resolution, map: Battlefield, players: Seq[PlayerConfig])
 
 // https://medium.com/@ramkarnani24/reading-configurations-in-scala-f987f839f54d
 // TODO: Check if it's possible to manage configuration like IOptions<> in C#
@@ -32,7 +32,7 @@ object GameConfig {
       cellSize = config.getInt("isc.game.outdatedtank.game.window.cellSize")
     )
 
-    val map = Map(
+    val battlefield = Battlefield(
       name = mapNameFinder(config.getString("isc.game.outdatedtank.game.map.name")),
       terrainColor = config.getString("isc.game.outdatedtank.game.map.terrainColor"),
     )
@@ -54,7 +54,7 @@ object GameConfig {
       )
     }.toSeq
 
-    GameConfig(resolution = resolution, map = map, players = players)
+    GameConfig(resolution = resolution, map = battlefield, players = players)
   }
 
   private def AWTcolorconverter(input: String): Color = {
