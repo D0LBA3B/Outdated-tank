@@ -4,7 +4,7 @@ import hevs.graphics.{FunGraphics, ImageGraphics}
 import hevs.graphics.utils.GraphicsBitmap
 import isc.game.outdatedtank.MapReader
 
-import java.awt.{Color, Desktop, Dimension}
+import java.awt.{Color, Desktop, Dimension, Image}
 import java.io.{File, FileInputStream}
 import java.net.URI
 import javax.imageio.ImageIO
@@ -23,6 +23,8 @@ object Game {
   def getWindow(width: Int = 800, height: Int = 600, title: String = "Outdated Tank"): FunGraphics = {
     if (gameWindow == null) {
       gameWindow = new FunGraphics(width, height, title)
+      val icon: Image = ImageIO.read(new File("./res/icon.png"))
+      gameWindow.mainFrame.setIconImage(icon)
     }
     gameWindow
   }
