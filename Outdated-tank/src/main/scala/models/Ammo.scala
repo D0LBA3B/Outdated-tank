@@ -10,7 +10,6 @@ class Ammo(var position: Position,
             var rebounce: Int,
             var projectileColor: Color
           ){
-
   private val movement: Map[Int, (Int,Int)] = Map(
     0 -> (2, 0),
     30 -> (2, 1),
@@ -30,28 +29,22 @@ class Ammo(var position: Position,
     330 -> (2, -1)
   )
 
+  // Get Dx Dy based of the angle
+  def getDx: Int = movement.getOrElse(angle, (2,0))._1
+  def getDy: Int = movement.getOrElse(angle, (2,0))._2
+
   def move(): Unit = {
-   val (dx, dy) = movement.getOrElse(angle, (2, 0)) // by default, angle is 0
-    position.x += dx
-    position.y += dy
+    position.x += getDx
+    position.y += getDy
   }
 
   // Triggered once it hit on a wall. To make the bounce effect
-  def bounce(): Unit = {
+  def bounce(hitType: String): Unit = {
     println(s"Ammo had angle $angle°")
-
-    // Know if it's horizontal / vertical / both hit ! TODO: FIND A WAY TO GET CELL SIZE replace to by the modulo
-    val iX: Double = position.x % 10
-    val iY: Double = position.y % 10
-    var hitType: String = ""
-
-    if(iX < iY) hitType = "vertical"
-    else if(iY < iX) hitType = "horizontal"
-    else if(iY == iX) hitType = "both"
 
     var (dx, dy) = movement.getOrElse(angle, (2, 0)) // by default, get angle 0
 
-    // Go back to last position avoid ammo to be stuck in walls or map border
+    // Go backward one time
     position.x -= dx
     position.y -= dy
 
@@ -74,6 +67,10 @@ class Ammo(var position: Position,
 
     println(s"Ammo have now angle $angle°")
     println(s"$rebounce left")
+
+    // Go forward one time
+    position.x += dx
+    position.y += dy
 
     rebounce -= 1
   }

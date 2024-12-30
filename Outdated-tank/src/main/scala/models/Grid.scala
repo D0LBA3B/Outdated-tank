@@ -12,7 +12,7 @@ class Grid(cells: Array[Array[Cell]]) {
   val fg : FunGraphics = Game.getWindow(width = cells(0).length * cellSize , height = cells.length * cellSize); //new FunGraphics(width = cells(0).length * cellSize , height = cells.length * cellSize)
   fg.displayFPS(true)
 
-  def isWallAt(pos: Position): Boolean = {
+  private def isWallAt(pos: Position): Boolean = {
     val ix: Int = pos.x / cellSize
     val iy: Int = pos.y / cellSize
 
@@ -30,6 +30,25 @@ class Grid(cells: Array[Array[Cell]]) {
     position.x >= 0 && position.x < width * cellSize && position.y >= 0 && position.y < height * cellSize
   }
 
+  private def bounceType(a: Ammo): String = {
+    // Make sur positions are natural number
+    if (a.position.x < 0) a.position.x = 0
+    if (a.position.y < 0) a.position.y = 0
+
+    if(a.position.x == 0 || a.position.x >= cells.head.length * cellSize - 1) "vertical"
+    else if(a.position.y == 0 || a.position.y >= cells.head.length * cellSize - 1) "horizontal"
+    else if(cells(a.position.y / cellSize - 1)(a.position.x / cellSize).maybeAmmo.isDefined ||
+            cells(a.position.y / cellSize + 1)(a.position.x / cellSize).maybeAmmo.isDefined){
+      "horizontal"
+    }
+    else if (cells(a.position.y / cellSize)(a.position.x / cellSize - 1).maybeAmmo.isDefined ||
+             cells(a.position.y / cellSize)(a.position.x / cellSize + 1).maybeAmmo.isDefined) {
+      "vertical"
+    }
+    else {
+      "both"
+    }
+  }
   def update(): Unit = {
     for (player <- players) {
       for (tank <- player.tanks) {
@@ -37,8 +56,7 @@ class Grid(cells: Array[Array[Cell]]) {
           ammo.move()
           if(isWallAt(ammo.position)){
             println(s"Collision with wall at X:${ammo.position.x} Y:${ammo.position.y}")
-            ammo.bounce()
-            ammo.move()
+            ammo.bounce(bounceType(ammo))
           }
           //checkTankCollision(ammo)
         }
@@ -55,10 +73,17 @@ class Grid(cells: Array[Array[Cell]]) {
         if (inBounds(tank.position)) {
           cells(tank.position.y)(tank.position.x).maybeTank = Some(tank) //TODO: Make the same as projectiles here
           tank.projectiles.foreach(a => {
-            // Avoid outOfBounds
-            val iX = if(a.position.x / cellSize >= cells.head.length) 74 else a.position.x / cellSize
-            val iY = if(a.position.y / cellSize >= cells.length) 74 else a.position.y / cellSize
-            cells(iY)(iX).maybeAmmo = Some(a)
+            //Remove it from last cell where she was
+            var iX = if(a.position.x - a.getDx / cellSize >= cells.head.length) cells.head.length - 1 else a.position.x - a.getDx / cellSize
+            if(iX < 0) iX = 0
+            var iY = if (a.position.y - a.getDy / cellSize >= cells.length) cells.length - 1 else a.position.y - a.getDy / cellSize
+            if(iY < 0) iY = 0
+            cells(iY)(iX).maybeAmmo = None
+
+            // Set the ammo in this cell
+            val iX2 = if(a.position.x / cellSize >= cells.head.length) 74 else a.position.x / cellSize
+            val iY2 = if(a.position.y / cellSize >= cells.length) 74 else a.position.y / cellSize
+            cells(iY2)(iX2).maybeAmmo = Some(a)
           })
         }
       })
