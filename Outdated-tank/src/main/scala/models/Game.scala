@@ -46,6 +46,7 @@ class Game private(val config: GameConfig) {
     val fontSize: Int = 30
     val menuWindow = Game.getWindow(menuWidth, menuHeight)
     menuWindow.clear(new Color(140, 129, 107, 255))
+    menuWindow.mainFrame.getKeyListeners.foreach(k => menuWindow.mainFrame.removeKeyListener(k))
 
     // Logo
     val bufferedLogo = ImageIO.read(new FileInputStream(new File("./res/logo.png")))
@@ -127,5 +128,14 @@ class Game private(val config: GameConfig) {
       Thread.sleep(10)
     }
   }
+
+  private def ShowOptions(): Unit = {
+    val optionsWindow = Game.getWindow()
+    optionsWindow.clear(new Color(140, 129, 107, 255))
+    optionsWindow.mainFrame.getKeyListeners.foreach(k => optionsWindow.mainFrame.removeKeyListener(k))
+
+
+  }
+
   //TODO: Setup live screen capture here instead
 }
