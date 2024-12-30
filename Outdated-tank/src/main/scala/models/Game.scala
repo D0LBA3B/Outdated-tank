@@ -1,10 +1,10 @@
 package isc.game.outdatedtank.models
 
-import hevs.graphics.{FunGraphics, ImageGraphics}
+import hevs.graphics.FunGraphics
 import hevs.graphics.utils.GraphicsBitmap
 import isc.game.outdatedtank.MapReader
 
-import java.awt.{Color, Desktop, Dimension, Image}
+import java.awt.{Color, Desktop, Font, Image}
 import java.io.{File, FileInputStream}
 import java.net.URI
 import javax.imageio.ImageIO
@@ -43,7 +43,7 @@ class Game private(val config: GameConfig) {
     val buttonWidth: Int = 200
     val buttonHeight: Int = 50
     val buttonSpacing: Int = 20
-
+    val fontSize: Int = 30
     val menuWindow = Game.getWindow(menuWidth, menuHeight)
     menuWindow.clear(new Color(140, 129, 107, 255))
 
@@ -56,7 +56,7 @@ class Game private(val config: GameConfig) {
     menuWindow.drawPicture(logoX, logoY, logoBitmap)
 
     // Buttons
-    val buttonLabels = List("FIGHT !", "OPTIONS", "CREDITS", "EXIT")
+    val buttonLabels = List("FIGHT \u2694", "OPTIONS", "CREDITS", "DONATE \u2764", "EXIT")
     val startY = logoY + bufferedLogo.getHeight  + 2 * buttonHeight
     buttonLabels.zipWithIndex.foreach { case (label, index) =>
       val buttonX: Int = (menuWidth - buttonWidth) / 2
@@ -68,10 +68,12 @@ class Game private(val config: GameConfig) {
 
       // label
       menuWindow.setColor(Color.WHITE)
-      val stringSize = menuWindow.getStringSize(label)
-      val labelX = buttonX + (buttonWidth - stringSize.getWidth.toInt - 75) / 2
-      val labelY = buttonY + (buttonHeight + stringSize.getHeight.toInt + 5) / 2
-      menuWindow.drawString(labelX, labelY, label, Color.WHITE, 30)
+      val font = new Font("Segoe UI Emoji", Font.PLAIN, fontSize)
+      val metrics = menuWindow.mainFrame.getFontMetrics(font)
+      val labelX = buttonX + (buttonWidth - metrics.stringWidth(label)) / 2
+      val labelY = buttonY + (buttonHeight + metrics.getHeight) / 2 - (metrics.getHeight - metrics.getAscent) / 2
+
+      menuWindow.drawString(posX = labelX, posY = labelY, str = label, color = Color.WHITE, fontSize = 30, fontFamily =  "Segoe UI Emoji")
     }
 
     // Menu events
@@ -87,9 +89,10 @@ class Game private(val config: GameConfig) {
           if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
             mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
             label match {
-              case "FIGHT !" => launchGame()
+              case "FIGHT \u2694" => launchGame()
               case "OPTIONS" => println("TODO")
               case "CREDITS" => Desktop.getDesktop.browse(new URI("https://github.com/D0LBA3B/Outdated-tank/"))
+              case "DONATE \u2764" => Desktop.getDesktop.browse(new URI("https://buymeacoffee.com/dolba3b"))
               case "EXIT" => System.exit(0)
               case _ =>
             }
