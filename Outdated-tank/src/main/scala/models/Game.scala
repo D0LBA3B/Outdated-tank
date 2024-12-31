@@ -4,6 +4,7 @@ import hevs.graphics.FunGraphics
 import hevs.graphics.utils.GraphicsBitmap
 import isc.game.outdatedtank.MapReader
 
+import java.awt.event.{KeyEvent, KeyListener}
 import java.awt.{Color, Desktop, Font, Image}
 import java.io.{File, FileInputStream}
 import java.net.URI
@@ -106,9 +107,8 @@ class Game private(val config: GameConfig) {
   private def launchGame(): Unit = {
     println("Game Started!")
     val grid: Grid = new Grid(MapReader.ReadJson(config.map.name))
+    val gameWindow = Game.getWindow()
 
-    //TODO: Setup key listeners before while loop using config
-    // config.players(X).controls.moveXX
     var tmpI = 1
     config.players.foreach(player => {
       var gamePlayer = new Player(player.name, player.color)
@@ -117,24 +117,53 @@ class Game private(val config: GameConfig) {
       tmpI += 5
     })
 
+    gameWindow.setKeyManager(new KeyListener {
+      override def keyTyped(e: KeyEvent): Unit = { }
+      override def keyPressed(e: KeyEvent): Unit = {
+        val keyPressedChar = e.getKeyChar
+        config.players.foreach(player => {
+          val maybeGridPlayer = grid.players.find(_.name == player.name)
+          println(s"Key: ${keyPressedChar}")
+
+          maybeGridPlayer.foreach { gridPlayer =>
+            keyPressedChar match {
+              case upChar if upChar == player.controls.moveUp.head =>
+                gridPlayer.tanks.foreach(t => t.move(0, -1))
+              case downChar if downChar == player.controls.moveDown.head =>
+                gridPlayer.tanks.foreach(t => t.move(0, 1))
+              case leftChar if leftChar == player.controls.moveLeft.head =>
+                gridPlayer.tanks.foreach(t => t.move(-1, 0))
+              case rightChar if rightChar == player.controls.moveRight.head =>
+                gridPlayer.tanks.foreach(t => t.move(1, 0))
+              case _ =>
+            }
+          }
+        });
+      }
+      override def keyReleased(e: KeyEvent): Unit = {}
+    })
+
     grid.drawGrid()
     var count = 1
-    while (isGameOver) {
-      grid.update()
-      if (count > 0){
-        grid.players.head.tanks.head.fire(30)
-        count += -1
+
+    //the game loop is executed in a separate thread to avoid blocking the event distribution thread (EDT), otherwise it won't work
+    //this ensures that the user interface can always handle key events and remain reactive
+    new Thread(() => {
+      while (isGameOver) {
+        grid.update()
+        if (count > 0){
+          grid.players.head.tanks.head.fire(30)
+          count += -1
+        }
+        Thread.sleep(10)
       }
-      Thread.sleep(10)
-    }
+    }).start()
   }
 
   private def ShowOptions(): Unit = {
     val optionsWindow = Game.getWindow()
     optionsWindow.clear(new Color(140, 129, 107, 255))
     optionsWindow.mainFrame.getKeyListeners.foreach(k => optionsWindow.mainFrame.removeKeyListener(k))
-
-
   }
 
   //TODO: Setup live screen capture here instead

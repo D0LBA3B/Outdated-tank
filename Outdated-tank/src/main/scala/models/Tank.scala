@@ -6,9 +6,11 @@ class Tank(var position: Position,
             var health: Int = 100,
             var color: Color = Color.RED) {
 
+  var lastPosition: Position = null
   val projectiles: collection.mutable.ListBuffer[Ammo] = collection.mutable.ListBuffer.empty
 
   def move(dx: Int, dy: Int): Unit = {
+    lastPosition = position
     position.x += dx
     position.y += dy
   }

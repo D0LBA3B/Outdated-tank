@@ -71,7 +71,9 @@ class Grid(cells: Array[Array[Cell]]) {
     players.foreach(p => {
       p.tanks.foreach(tank => {
         if (inBounds(tank.position)) {
-          cells(tank.position.y)(tank.position.x).maybeTank = Some(tank) //TODO: Make the same as projectiles here
+
+          if(tank.lastPosition != null) cells(tank.lastPosition.y)(tank.lastPosition.x).maybeTank = None
+          cells(tank.position.y)(tank.position.x).maybeTank = Some(tank)
           tank.projectiles.foreach(a => {
             //Remove it from last cell where she was
             var iX = if(a.position.x - a.getDx / cellSize >= cells.head.length) cells.head.length - 1 else a.position.x - a.getDx / cellSize
