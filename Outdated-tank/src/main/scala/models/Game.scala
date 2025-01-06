@@ -164,7 +164,12 @@ class Game private(val config: GameConfig) {
             if (pressedKeys.contains(downCode)) dy += 1
             if (pressedKeys.contains(leftCode)) dx -= 1
             if (pressedKeys.contains(rightCode)) dx += 1
-            if (dx != 0 || dy != 0) t.move(dx * grid.cellSize, dy * grid.cellSize)
+
+            val newPos = Position(t.position.x + dx * grid.cellSize, t.position.y + dy * grid.cellSize)
+
+            if (!grid.isWallAt(newPos) && (dx != 0 || dy != 0)) {
+              t.move(dx * grid.cellSize, dy * grid.cellSize)
+            }
             if (pressedKeys.contains(shootCode)) t.fire(30)
           }
         }

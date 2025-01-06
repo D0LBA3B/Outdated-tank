@@ -12,7 +12,7 @@ class Grid(cells: Array[Array[Cell]]) {
   val fg : FunGraphics = Game.getWindow(width = cells(0).length * cellSize , height = cells.length * cellSize); //new FunGraphics(width = cells(0).length * cellSize , height = cells.length * cellSize)
   fg.displayFPS(true)
 
-  private def isWallAt(pos: Position): Boolean = {
+  def isWallAt(pos: Position): Boolean = {
     val ix: Int = pos.x / cellSize
     val iy: Int = pos.y / cellSize
 
@@ -26,9 +26,7 @@ class Grid(cells: Array[Array[Cell]]) {
     }
   }
 
-  private def inBounds(position: Position): Boolean = {
-    position.x >= 0 && position.x < width * cellSize && position.y >= 0 && position.y < height * cellSize
-  }
+  private def inBounds(position: Position): Boolean = position.x >= 0 && position.x < width * cellSize && position.y >= 0 && position.y < height * cellSize
 
   private def bounceType(a: Ammo): String = {
     // Make sur positions are natural number
