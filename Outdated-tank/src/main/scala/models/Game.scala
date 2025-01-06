@@ -9,6 +9,7 @@ import java.awt.{Color, Desktop, Font, Image}
 import java.io.{File, FileInputStream}
 import java.net.URI
 import javax.imageio.ImageIO
+import scala.collection.mutable
 
 object Game {
   private var gameInstance: Game = null
@@ -91,7 +92,10 @@ class Game private(val config: GameConfig) {
           if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
             mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
             label match {
-              case "FIGHT \u2694" => launchGame()
+              case "FIGHT \u2694" => {
+                menuWindow.mainFrame.removeMouseListener(this)
+                launchGame()
+              }
               case "OPTIONS" => println("TODO")
               case "CREDITS" => Desktop.getDesktop.browse(new URI("https://github.com/D0LBA3B/Outdated-tank/"))
               case "DONATE \u2764" => Desktop.getDesktop.browse(new URI("https://buymeacoffee.com/dolba3b"))
@@ -117,30 +121,17 @@ class Game private(val config: GameConfig) {
       tmpI += 5
     })
 
+    val pressedKeys = mutable.Set[Int]()
     gameWindow.setKeyManager(new KeyListener {
       override def keyTyped(e: KeyEvent): Unit = { }
-      override def keyPressed(e: KeyEvent): Unit = {
-        val keyPressedChar = e.getKeyChar
-        config.players.foreach(player => {
-          val maybeGridPlayer = grid.players.find(_.name == player.name)
-          println(s"Key: ${keyPressedChar}")
 
-          maybeGridPlayer.foreach { gridPlayer =>
-            keyPressedChar match {
-              case upChar if upChar == player.controls.moveUp.head =>
-                gridPlayer.tanks.foreach(t => t.move(0, -1))
-              case downChar if downChar == player.controls.moveDown.head =>
-                gridPlayer.tanks.foreach(t => t.move(0, 1))
-              case leftChar if leftChar == player.controls.moveLeft.head =>
-                gridPlayer.tanks.foreach(t => t.move(-1, 0))
-              case rightChar if rightChar == player.controls.moveRight.head =>
-                gridPlayer.tanks.foreach(t => t.move(1, 0))
-              case _ =>
-            }
-          }
-        });
+      override def keyPressed(e: KeyEvent): Unit = {
+        pressedKeys += e.getKeyCode
       }
-      override def keyReleased(e: KeyEvent): Unit = {}
+
+      override def keyReleased(e: KeyEvent): Unit = {
+        pressedKeys -= e.getKeyCode
+      }
     })
 
     grid.drawGrid()
@@ -150,15 +141,41 @@ class Game private(val config: GameConfig) {
     //this ensures that the user interface can always handle key events and remain reactive
     new Thread(() => {
       while (isGameOver) {
+
+        grid.players.foreach { gPlayer =>
+          val configForPlayer = config.players.find(_.name == gPlayer.name).get
+          val upChar = configForPlayer.controls.moveUp.head.toLower
+          val downChar = configForPlayer.controls.moveDown.head.toLower
+          val leftChar = configForPlayer.controls.moveLeft.head.toLower
+          val rightChar = configForPlayer.controls.moveRight.head.toLower
+
+          // converting char to KeyEvent
+          val upCode = charToKeyCode(upChar)
+          val downCode = charToKeyCode(downChar)
+          val leftCode = charToKeyCode(leftChar)
+          val rightCode = charToKeyCode(rightChar)
+
+          gPlayer.tanks.foreach { t =>
+            var dx = 0
+            var dy = 0
+            if (pressedKeys.contains(upCode)) dy -= 1
+            if (pressedKeys.contains(downCode)) dy += 1
+            if (pressedKeys.contains(leftCode)) dx -= 1
+            if (pressedKeys.contains(rightCode)) dx += 1
+            if(dx != 0 || dy != 0) t.move(dx, dy)
+          }
+        }
         grid.update()
         if (count > 0){
           grid.players.head.tanks.head.fire(30)
           count += -1
         }
-        Thread.sleep(10)
+        Thread.sleep(20)
       }
     }).start()
   }
+
+  private def charToKeyCode(c: Char): Int = KeyEvent.getExtendedKeyCodeForChar(c.toInt)
 
   private def ShowOptions(): Unit = {
     val optionsWindow = Game.getWindow()
