@@ -148,12 +148,14 @@ class Game private(val config: GameConfig) {
           val downChar = configForPlayer.controls.moveDown.head.toLower
           val leftChar = configForPlayer.controls.moveLeft.head.toLower
           val rightChar = configForPlayer.controls.moveRight.head.toLower
+          val shootChar = configForPlayer.controls.shoot.head.toLower
 
           // converting char to KeyEvent
           val upCode = charToKeyCode(upChar)
           val downCode = charToKeyCode(downChar)
           val leftCode = charToKeyCode(leftChar)
           val rightCode = charToKeyCode(rightChar)
+          val shootCode = charToKeyCode(shootChar)
 
           gPlayer.tanks.foreach { t =>
             var dx = 0
@@ -162,7 +164,8 @@ class Game private(val config: GameConfig) {
             if (pressedKeys.contains(downCode)) dy += 1
             if (pressedKeys.contains(leftCode)) dx -= 1
             if (pressedKeys.contains(rightCode)) dx += 1
-            if(dx != 0 || dy != 0) t.move(dx, dy)
+            if (dx != 0 || dy != 0) t.move(dx * grid.cellSize, dy * grid.cellSize)
+            if (pressedKeys.contains(shootCode)) t.fire(30)
           }
         }
         grid.update()

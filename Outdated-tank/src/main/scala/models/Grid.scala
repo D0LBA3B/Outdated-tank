@@ -49,6 +49,7 @@ class Grid(cells: Array[Array[Cell]]) {
       "both"
     }
   }
+
   def update(): Unit = {
     for (player <- players) {
       for (tank <- player.tanks) {
@@ -71,9 +72,16 @@ class Grid(cells: Array[Array[Cell]]) {
     players.foreach(p => {
       p.tanks.foreach(tank => {
         if (inBounds(tank.position)) {
+          if(tank.lastPosition != null) {
+            val oldCx = tank.lastPosition.x / cellSize
+            val oldCy = tank.lastPosition.y / cellSize
+            cells(oldCy)(oldCx).maybeTank = None
+          }
 
-          if(tank.lastPosition != null) cells(tank.lastPosition.y)(tank.lastPosition.x).maybeTank = None
-          cells(tank.position.y)(tank.position.x).maybeTank = Some(tank)
+          val cx = tank.position.x / cellSize
+          val cy = tank.position.y / cellSize
+          cells(cy)(cx).maybeTank = Some(tank)
+
           tank.projectiles.foreach(a => {
             //Remove it from last cell where she was
             var iX = if((a.position.x - a.getDx) / cellSize >= cells.head.length) cells.head.length - 1 else (a.position.x - a.getDx) / cellSize
