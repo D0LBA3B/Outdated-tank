@@ -76,9 +76,9 @@ class Grid(cells: Array[Array[Cell]]) {
           cells(tank.position.y)(tank.position.x).maybeTank = Some(tank)
           tank.projectiles.foreach(a => {
             //Remove it from last cell where she was
-            var iX = if(a.position.x - a.getDx / cellSize >= cells.head.length) cells.head.length - 1 else a.position.x - a.getDx / cellSize
+            var iX = if((a.position.x - a.getDx) / cellSize >= cells.head.length) cells.head.length - 1 else (a.position.x - a.getDx) / cellSize
             if(iX < 0) iX = 0
-            var iY = if (a.position.y - a.getDy / cellSize >= cells.length) cells.length - 1 else a.position.y - a.getDy / cellSize
+            var iY = if ((a.position.y - a.getDy) / cellSize >= cells.length) cells.length - 1 else (a.position.y - a.getDy) / cellSize
             if(iY < 0) iY = 0
             cells(iY)(iX).maybeAmmo = None
 
@@ -110,19 +110,23 @@ class Grid(cells: Array[Array[Cell]]) {
             } else {
               fg.setColor(cell.terrain.getColor)
             }
-          } else if(cell.maybeAmmo.isDefined){
-            if(xPixel == cell.maybeAmmo.get.position.x &&
-               yPixel == cell.maybeAmmo.get.position.y){
-              fg.setColor(cell.maybeAmmo.get.projectileColor)
-            } else {
-              fg.setColor(cell.terrain.getColor)
-            }
           }
 
-          fg.setPixel(xPixel, yPixel)
+          fg.setPixel(xPixel,yPixel)
         }
       }
     }
+
+    // TODO: Do the same with the tanks
+    players.foreach(
+      _.tanks.foreach(
+        _.projectiles.foreach(
+          ammo => {
+            fg.setColor(ammo.projectileColor)
+            fg.drawFilledCircle(ammo.position.x,ammo.position.y,5)
+          }
+        )
+    ))
   }
 
   private def drawTankShape(px: Int, py: Int, cellSize: Int): Boolean = {

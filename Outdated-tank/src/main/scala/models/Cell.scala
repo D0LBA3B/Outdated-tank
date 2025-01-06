@@ -4,11 +4,7 @@ class Cell(var terrain: Terrain, var maybeTank: Option[Tank] = None, var maybeAm
   def getColor: java.awt.Color = {
     maybeTank match {
       case Some(tank) => tank.color
-      case None =>
-        maybeAmmo match {
-          case Some(ammo) => ammo.projectileColor
-          case None => terrain.getColor
-        }
+      case None => terrain.getColor
     }
   }
 }
