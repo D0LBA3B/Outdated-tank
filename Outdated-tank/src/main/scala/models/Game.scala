@@ -149,6 +149,8 @@ class Game private(val config: GameConfig) {
           val leftChar = configForPlayer.controls.moveLeft.head.toLower
           val rightChar = configForPlayer.controls.moveRight.head.toLower
           val shootChar = configForPlayer.controls.shoot.head.toLower
+          val turretLeft = configForPlayer.controls.turretLeft.head.toLower
+          val turretRight = configForPlayer.controls.turretRight.head.toLower
 
           // converting char to KeyEvent
           val upCode = charToKeyCode(upChar)
@@ -156,6 +158,8 @@ class Game private(val config: GameConfig) {
           val leftCode = charToKeyCode(leftChar)
           val rightCode = charToKeyCode(rightChar)
           val shootCode = charToKeyCode(shootChar)
+          val turretLeftCode = charToKeyCode(turretLeft)
+          val turretRightCode = charToKeyCode(turretRight)
 
           gPlayer.tanks.foreach { t =>
             var dx = 0
@@ -166,16 +170,22 @@ class Game private(val config: GameConfig) {
             if (pressedKeys.contains(rightCode)) dx += 1
 
             val newPos = Position(t.position.x + dx * grid.cellSize, t.position.y + dy * grid.cellSize)
-
             if (!grid.isWallAt(newPos) && (dx != 0 || dy != 0)) {
               t.move(dx * grid.cellSize, dy * grid.cellSize)
             }
-            if (pressedKeys.contains(shootCode)) t.fire(30)
+
+            //TODO
+            // it might be cool to have slower rotations for some tanks, and it'll reflect reality better
+            // if there's a VIII Maus against the AMX-30
+            // var rotationFactor = 1.5 * grid.cellSize
+            if (pressedKeys.contains(turretLeftCode)) t.moveTurret(true)
+            if (pressedKeys.contains(turretRightCode)) t.moveTurret()
+            if (pressedKeys.contains(shootCode)) t.fire()
           }
         }
         grid.update()
         if (count > 0){
-          grid.players.head.tanks.head.fire(30)
+          grid.players.head.tanks.head.fire()
           count += -1
         }
         Thread.sleep(20)
