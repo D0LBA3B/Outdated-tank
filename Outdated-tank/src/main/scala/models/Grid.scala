@@ -99,40 +99,41 @@ class Grid(cells: Array[Array[Cell]]) {
   }
 
   def drawGrid(): Unit = {
-    for (rowIndex <- cells.indices) {
-      val row = cells(rowIndex)
-      for (colIndex <- row.indices) {
-        val cell = row(colIndex)
+    fg.frontBuffer.synchronized {
+      for (rowIndex <- cells.indices) {
+        val row = cells(rowIndex)
+        for (colIndex <- row.indices) {
+          val cell = row(colIndex)
 
-        for (py <- 0 until cellSize; px <- 0 until cellSize) {
-          fg.setColor(cell.getColor)
+          for (py <- 0 until cellSize; px <- 0 until cellSize) {
+            fg.setColor(cell.getColor)
 
-          val xPixel = colIndex * cellSize + px
-          val yPixel = rowIndex * cellSize + py
+            val xPixel = colIndex * cellSize + px
+            val yPixel = rowIndex * cellSize + py
 
-          fg.setPixel(xPixel,yPixel)
+            fg.setPixel(xPixel,yPixel)
+          }
         }
       }
+
+      players.foreach(
+        _.tanks.foreach(
+          tank => {
+            fg.setColor(tank.color)
+            tank.getTankShape.foreach(
+              position => {
+                fg.setPixel(position.x,position.y)
+              }
+            )
+            tank.projectiles.foreach(
+              ammo => {
+                fg.setColor(ammo.projectileColor)
+                fg.drawFilledCircle(ammo.position.x, ammo.position.y, 5)
+              }
+            )
+          }
+        ))
     }
-
-
-    players.foreach(
-      _.tanks.foreach(
-        tank => {
-          fg.setColor(tank.color)
-          tank.getTankShape.foreach(
-            position => {
-              fg.setPixel(position.x, position.y)
-            }
-          )
-          tank.projectiles.foreach(
-            ammo => {
-              fg.setColor(ammo.projectileColor)
-              fg.drawFilledCircle(ammo.position.x, ammo.position.y, 5)
-            }
-          )
-        }
-    ))
   }
 
   private def checkTankCollision(ammo: Ammo): Unit = {
