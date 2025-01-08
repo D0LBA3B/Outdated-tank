@@ -6,13 +6,14 @@ import scala.collection.mutable.ListBuffer
 class Tank(var position: Position,
             var health: Int = 100,
             var color: Color = Color.RED,
-            initialTurretPos: Int = 0) {
+            initialTurretPos: Int = 0,
+            fireCooldown: Long = 1500) {
 
   var lastPosition: Position = null
   val projectiles: collection.mutable.ListBuffer[Ammo] = collection.mutable.ListBuffer.empty
   private[this] var turretPosition: Int = initialTurretPos
   private var lastFireAt: Long = 0
-  private val fireCooldown: Long = 1500
+  private[this] var cooldown: Long = fireCooldown
 
   private val validAngles: Seq[Int] = Seq(
     0, 30, 45, 60, 90, 120, 135, 150,
@@ -32,7 +33,7 @@ class Tank(var position: Position,
   }
 
   def fire(): Unit = {
-    if(System.currentTimeMillis() - fireCooldown >= lastFireAt) {
+    if(System.currentTimeMillis() - cooldown >= lastFireAt) {
       val newAmmo = new Ammo(position=position.copy(),angle=turretPosition,damage = 10,size = 1, shotOn=System.currentTimeMillis(), rebounce = 10, this.color)
       projectiles += newAmmo
       lastFireAt = System.currentTimeMillis()

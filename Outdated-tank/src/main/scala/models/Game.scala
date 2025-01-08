@@ -116,7 +116,10 @@ class Game private(val config: GameConfig) {
     var tmpI = 1
     config.players.foreach(player => {
       var gamePlayer = new Player(player.name, player.color)
-      gamePlayer.tanks.addOne(new Tank(position = new Position(tmpI, tmpI), color = player.color))
+      gamePlayer.tanks.addOne(new Tank(position = new Position(tmpI, tmpI),
+                                        color = player.color,
+                                        health = player.specificity.health,
+                                        fireCooldown = player.specificity.fireCooldown))
       grid.players.addOne(gamePlayer)
       tmpI += 5
     })

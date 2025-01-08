@@ -18,7 +18,9 @@ case class ControlsConfig(moveUp: String,
                            turretLeft: String,
                            turretRight: String)
 
-case class PlayerConfig(name: String, color: Color, controls: ControlsConfig)
+case class SpecificityConfig(name: String, fireCooldown: Long, ammoDamage: Int, health: Int)
+
+case class PlayerConfig(name: String, color: Color, controls: ControlsConfig, specificity: SpecificityConfig)
 
 case class GameConfig(resolution: Resolution, map: Battlefield, players: Seq[PlayerConfig])
 
@@ -38,6 +40,15 @@ object GameConfig {
       terrainColor = config.getString("isc.game.outdatedtank.game.map.terrainColor"),
     )
 
+    val specificitiesConfig = config.getConfigList("isc.game.outdatedtank.game.specificities").asScala
+    val specificities = specificitiesConfig.map { specificity =>
+      SpecificityConfig(
+        name = specificity.getString("name"),
+        fireCooldown = specificity.getLong("fireCooldown"),
+        ammoDamage = specificity.getInt("ammoDamage"),
+        health = specificity.getInt("health"))
+    }
+
     val playersConfig = config.getConfigList("isc.game.outdatedtank.game.players").asScala
     val players = playersConfig.map { player =>
       PlayerConfig(
@@ -51,7 +62,8 @@ object GameConfig {
           shoot = player.getString("controls.shoot"),
           turretLeft = player.getString("controls.turretLeft"),
           turretRight = player.getString("controls.turretRight")
-        )
+        ),
+        specificity = specificities(specificities.indexWhere(c => c.name == player.getString("specificity")))
       )
     }.toSeq
 

@@ -76,9 +76,11 @@ class Grid(cells: Array[Array[Cell]]) {
             cells(oldCy)(oldCx).maybeTank = None
           }
 
-          val cx = tank.position.x / cellSize
-          val cy = tank.position.y / cellSize
-          cells(cy)(cx).maybeTank = Some(tank)
+          if(tank.health > 0) {
+            val cx = tank.position.x / cellSize
+            val cy = tank.position.y / cellSize
+            cells(cy)(cx).maybeTank = Some(tank)
+          }
 
           tank.projectiles.foreach(a => {
             //Remove it from last cell where she was
