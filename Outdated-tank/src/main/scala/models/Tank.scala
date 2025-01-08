@@ -10,6 +10,8 @@ class Tank(var position: Position,
   var lastPosition: Position = null
   val projectiles: collection.mutable.ListBuffer[Ammo] = collection.mutable.ListBuffer.empty
   private[this] var turretPosition: Int = initialTurretPos
+  private var lastFireAt: Long = 0
+  private val fireCooldown: Long = 1500
 
   private val validAngles: Seq[Int] = Seq(
     0, 30, 45, 60, 90, 120, 135, 150,
@@ -29,8 +31,11 @@ class Tank(var position: Position,
   }
 
   def fire(): Unit = {
-    val newAmmo = new Ammo(position=position.copy(),angle=turretPosition,damage = 10,size = 1, shotOn=System.currentTimeMillis(), rebounce = 10, this.color)
-    projectiles += newAmmo
+    if(System.currentTimeMillis() - fireCooldown >= lastFireAt) {
+      val newAmmo = new Ammo(position=position.copy(),angle=turretPosition,damage = 10,size = 1, shotOn=System.currentTimeMillis(), rebounce = 10, this.color)
+      projectiles += newAmmo
+      lastFireAt = System.currentTimeMillis()
+    }
   }
 
   def takeDamage(dmg: Int): Unit = {
