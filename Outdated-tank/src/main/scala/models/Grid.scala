@@ -110,44 +110,29 @@ class Grid(cells: Array[Array[Cell]]) {
           val xPixel = colIndex * cellSize + px
           val yPixel = rowIndex * cellSize + py
 
-          if (cell.maybeTank.isDefined) {
-            if (drawTankShape(px, py, cellSize)) {
-              fg.setColor(cell.maybeTank.get.color)
-            } else {
-              fg.setColor(cell.terrain.getColor)
-            }
-          }
-
           fg.setPixel(xPixel,yPixel)
         }
       }
     }
 
-    // TODO: Do the same with the tanks
+
     players.foreach(
       _.tanks.foreach(
-        _.projectiles.foreach(
-          ammo => {
-            fg.setColor(ammo.projectileColor)
-            fg.drawFilledCircle(ammo.position.x,ammo.position.y,5)
-          }
-        )
+        tank => {
+          fg.setColor(tank.color)
+          tank.getTankShape.foreach(
+            position => {
+              fg.setPixel(position.x, position.y)
+            }
+          )
+          tank.projectiles.foreach(
+            ammo => {
+              fg.setColor(ammo.projectileColor)
+              fg.drawFilledCircle(ammo.position.x, ammo.position.y, 5)
+            }
+          )
+        }
     ))
-  }
-
-  private def drawTankShape(px: Int, py: Int, cellSize: Int): Boolean = {
-    if (
-        // Line py=1 : columns x=3..6
-        (py == 1 && px >= 3 && px <= 6) ||
-        // Line py=2 : columns x=2..7
-        (py == 2 && px >= 2 && px <= 7) ||
-        // Line py=3: columns x=2, x=4, x=6 (a hole in the middle for the turret)
-        (py == 3 && (px == 2 || px == 4 || px == 6)) ||
-        // Line py=4 : columns x=2..7
-        (py == 4 && px >= 2 && px <= 7) ||
-        // Line py=5 : columns x=3..6
-        (py == 5 && px >= 3 && px <= 6)
-    ) true else false
   }
 
   private def checkTankCollision(ammo: Ammo): Unit = {
