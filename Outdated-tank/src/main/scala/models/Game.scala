@@ -119,7 +119,8 @@ class Game private(val config: GameConfig) {
       gamePlayer.tanks.addOne(new Tank(position = new Position(tmpI, tmpI),
                                         color = player.color,
                                         health = player.specificity.health,
-                                        fireCooldown = player.specificity.fireCooldown))
+                                        fireCooldown = player.specificity.fireCooldown,
+                                        ammoDamage = player.specificity.ammoDamage))
       grid.players.addOne(gamePlayer)
       tmpI += 5
     })
@@ -138,13 +139,11 @@ class Game private(val config: GameConfig) {
     })
 
     grid.drawGrid()
-    var count = 1
 
     //the game loop is executed in a separate thread to avoid blocking the event distribution thread (EDT), otherwise it won't work
     //this ensures that the user interface can always handle key events and remain reactive
     new Thread(() => {
       while (isGameOver) {
-
         grid.players.foreach { gPlayer =>
           val configForPlayer = config.players.find(_.name == gPlayer.name).get
           val upChar = configForPlayer.controls.moveUp.head.toLower
@@ -187,10 +186,6 @@ class Game private(val config: GameConfig) {
           }
         }
         grid.update()
-        if (count > 0){
-          grid.players.head.tanks.head.fire()
-          count += -1
-        }
         Thread.sleep(20)
       }
     }).start()

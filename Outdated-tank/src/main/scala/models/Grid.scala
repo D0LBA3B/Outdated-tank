@@ -82,6 +82,7 @@ class Grid(cells: Array[Array[Cell]]) {
             cells(cy)(cx).maybeTank = Some(tank)
           }
 
+          var indexOfAmmoToRemoves: ListBuffer[Int] = collection.mutable.ListBuffer.empty
           tank.projectiles.foreach(a => {
             //Remove it from last cell where she was
             var iX = if((a.position.x - a.getDx) / cellSize >= cells.head.length) cells.head.length - 1 else (a.position.x - a.getDx) / cellSize
@@ -91,10 +92,16 @@ class Grid(cells: Array[Array[Cell]]) {
             cells(iY)(iX).maybeAmmo = None
 
             // Set the ammo in this cell
-            val iX2 = if(a.position.x / cellSize >= cells.head.length) 74 else a.position.x / cellSize
-            val iY2 = if(a.position.y / cellSize >= cells.length) 74 else a.position.y / cellSize
-            cells(iY2)(iX2).maybeAmmo = Some(a)
+            if(a.bounceLeft >= 0) {
+              val iX2 = if (a.position.x / cellSize >= cells.head.length) 74 else a.position.x / cellSize
+              val iY2 = if (a.position.y / cellSize >= cells.length) 74 else a.position.y / cellSize
+              cells(iY2)(iX2).maybeAmmo = Some(a)
+            }
+            else {
+              indexOfAmmoToRemoves.addOne(tank.projectiles.indexOf(a))
+            }
           })
+          indexOfAmmoToRemoves.foreach(i => tank.projectiles.remove(i))
         }
       })
     })

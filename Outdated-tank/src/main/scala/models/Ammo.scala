@@ -4,11 +4,10 @@ import java.awt.Color
 
 class Ammo( var position: Position,
             var angle: Int,
-            val damage: Int = 10,
+            val damage: Int,
             var size: Int,
             var bounceLeft: Int,
-            var projectileColor: Color
-          ){
+            var projectileColor: Color) {
   private val id: String = ""
   private val movement: Map[Int, (Int,Int)] = Map(
     0 -> (2, 0),
@@ -67,13 +66,12 @@ class Ammo( var position: Position,
     //Reset the angle by the direction adjustment
     angle = movement.map(_.swap).getOrElse((dx,dy),0)
 
-    println(s"Ammo have now angle $angle°")
-    println(s"$bounceLeft left")
+    //println(s"Ammo have now angle $angle°")
+    //pintln(s"$bounceLeft left")
 
     // Go forward one time
     position.x += dx
     position.y += dy
-
     bounceLeft -= 1
   }
 }
