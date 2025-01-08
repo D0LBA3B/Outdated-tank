@@ -2,14 +2,14 @@ package isc.game.outdatedtank.models
 
 import java.awt.Color
 
-class Ammo(var position: Position,
+class Ammo( var position: Position,
             var angle: Int,
-            var damage: Int = 10,
+            val damage: Int = 10,
             var size: Int,
-            val shotOn: Long,
-            var rebounce: Int,
+            var bounceLeft: Int,
             var projectileColor: Color
           ){
+  private val id: String = ""
   private val movement: Map[Int, (Int,Int)] = Map(
     0 -> (2, 0),
     30 -> (2, 1),
@@ -28,6 +28,8 @@ class Ammo(var position: Position,
     315 -> (1, -1),
     330 -> (2, -1)
   )
+
+  def getId: String = id
 
   // Get Dx Dy based of the angle
   def getDx: Int = movement.getOrElse(angle, (2,0))._1
@@ -66,12 +68,12 @@ class Ammo(var position: Position,
     angle = movement.map(_.swap).getOrElse((dx,dy),0)
 
     println(s"Ammo have now angle $angle°")
-    println(s"$rebounce left")
+    println(s"$bounceLeft left")
 
     // Go forward one time
     position.x += dx
     position.y += dy
 
-    rebounce -= 1
+    bounceLeft -= 1
   }
 }

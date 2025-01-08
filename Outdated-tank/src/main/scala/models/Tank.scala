@@ -34,7 +34,7 @@ class Tank(var position: Position,
 
   def fire(): Unit = {
     if(System.currentTimeMillis() - cooldown >= lastFireAt) {
-      val newAmmo = new Ammo(position=position.copy(),angle=turretPosition,damage = 10,size = 1, shotOn=System.currentTimeMillis(), rebounce = 10, this.color)
+      val newAmmo = new Ammo(position=position.copy(),angle=turretPosition,damage = 10,size = 1, bounceLeft = 10, this.color)
       projectiles += newAmmo
       lastFireAt = System.currentTimeMillis()
     }

@@ -144,7 +144,6 @@ class Grid(cells: Array[Array[Cell]]) {
       val dist = hypot(t.position.x - ammo.position.x, t.position.y - ammo.position.y)
       if (dist < radius) {
         t.takeDamage(ammo.damage)
-        ammo.damage = 0
       }
     }
   }
