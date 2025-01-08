@@ -12,7 +12,7 @@ class Tank(var position: Position,
   val projectiles: collection.mutable.ListBuffer[Ammo] = collection.mutable.ListBuffer.empty
   private[this] var turretPosition: Int = initialTurretPos
   private var lastFireAt: Long = 0
-  private val fireCooldown: Long = s
+  private val fireCooldown: Long = 1500
 
   private val validAngles: Seq[Int] = Seq(
     0, 30, 45, 60, 90, 120, 135, 150,
@@ -48,11 +48,12 @@ class Tank(var position: Position,
 
   def getTankShape: ListBuffer[Position] = {
     val shape: ListBuffer[Position] = new ListBuffer[Position]
-    for (x <- 5 to 10) { shape += Position(position.x + x,position.y + 1); shape += Position(position.x + x,position.y + 9)}
-    for (x <- 4 to 11) { shape += Position(position.x + x,position.y + 2); shape += Position(position.x + x,position.y + 8)}
-    for (x <- 3 to 12) { shape += Position(position.x + x,position.y + 3); shape += Position(position.x + x,position.y + 7)}
-    for (x <- 2 to 14) { shape += Position(position.x + x,position.y + 4); shape += Position(position.x + x,position.y + 6)}
-    for (x <- 2 to 12 by 2) { shape += Position(position.x + x,position.y + 5)}
+
+    for (x <- -2 to 2) { shape += Position(position.x + x,position.y + 4); shape += Position(position.x + x,position.y - 4)}
+    for (x <- -3 to 3) { shape += Position(position.x + x,position.y + 3); shape += Position(position.x + x,position.y - 3)}
+    for (x <- -4 to 4) { shape += Position(position.x + x,position.y + 2); shape += Position(position.x + x,position.y - 2)}
+    for (x <- -6 to 6) { shape += Position(position.x + x,position.y + 1); shape += Position(position.x + x,position.y - 1)}
+    for (x <- -6 to 6 by 2 if x != 0) { shape += Position(position.x + x,position.y)}
     shape
   }
 }
