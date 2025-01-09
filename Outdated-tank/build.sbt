@@ -1,4 +1,24 @@
-ThisBuild / version := "0.1.0-SNAPSHOT"
+import sbtassembly.AssemblyPlugin.autoImport._
+import sbtassembly.MergeStrategy
+import sbtassembly.PathList
+
+enablePlugins(AssemblyPlugin)
+
+assembly / assemblyMergeStrategy := {
+  case PathList("module-info.class") =>
+    MergeStrategy.discard
+
+  case PathList("META-INF", "versions", _ @ _*) =>
+    MergeStrategy.discard
+
+  case "META-INF/ECLIPSEF.RSA" | "META-INF/ECLIPSEF.SF" | "META-INF/DEPENDENCIES" =>
+    MergeStrategy.discard
+
+  case x =>
+    MergeStrategy.defaultMergeStrategy(x)
+}
+
+ThisBuild / version := "latest"
 
 ThisBuild / scalaVersion := "2.13.14"
 
