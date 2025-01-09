@@ -7,7 +7,7 @@ import isc.game.outdatedtank.MapReader
 import java.awt.event.{KeyEvent, KeyListener}
 import java.awt.{Color, Desktop, Font, Image}
 import java.io.{File, FileInputStream}
-import java.net.URI
+import java.net.{URI, URL}
 import javax.imageio.ImageIO
 import scala.collection.mutable
 
@@ -25,7 +25,7 @@ object Game {
   def getWindow(width: Int = 800, height: Int = 600, title: String = "Outdated Tank"): FunGraphics = {
     if (gameWindow == null) {
       gameWindow = new FunGraphics(width, height, title)
-      val icon: Image = ImageIO.read(new File("./res/icon.png"))
+      val icon: Image = ImageIO.read(new URL("https://raw.githubusercontent.com/D0LBA3B/Outdated-tank/develop/Outdated-tank/res/icon.png"))
       gameWindow.mainFrame.setIconImage(icon)
     }
     gameWindow
@@ -51,7 +51,8 @@ class Game private(val config: GameConfig) {
     menuWindow.mainFrame.getKeyListeners.foreach(k => menuWindow.mainFrame.removeKeyListener(k))
 
     // Logo
-    val bufferedLogo = ImageIO.read(new FileInputStream(new File("./res/logo.png")))
+    val bufferedLogo = ImageIO.read(new URL("https://raw.githubusercontent.com/D0LBA3B/Outdated-tank/develop/Outdated-tank/res/logo.png"))
+
     val logoBitmap = new GraphicsBitmap("")
     logoBitmap.mBitmap = bufferedLogo
     val logoX = (menuWidth - bufferedLogo.getWidth) / 2
