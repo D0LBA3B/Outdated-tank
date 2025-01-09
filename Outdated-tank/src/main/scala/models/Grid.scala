@@ -35,12 +35,12 @@ class Grid(cells: Array[Array[Cell]]) {
 
     if(a.position.x == 0 || a.position.x >= cells.head.length * cellSize - 1) "vertical"
     else if(a.position.y == 0 || a.position.y >= cells.head.length * cellSize - 1) "horizontal"
-    else if(cells(a.position.y / cellSize - 1)(a.position.x / cellSize).maybeAmmo.isDefined ||
-            cells(a.position.y / cellSize + 1)(a.position.x / cellSize).maybeAmmo.isDefined){
+    else if(cells(a.position.y / cellSize - 1)(a.position.x / cellSize).ammos.nonEmpty ||
+            cells(a.position.y / cellSize + 1)(a.position.x / cellSize).ammos.nonEmpty){
       "horizontal"
     }
-    else if (cells(a.position.y / cellSize)(a.position.x / cellSize - 1).maybeAmmo.isDefined ||
-             cells(a.position.y / cellSize)(a.position.x / cellSize + 1).maybeAmmo.isDefined) {
+    else if (cells(a.position.y / cellSize)(a.position.x / cellSize - 1).ammos.nonEmpty ||
+             cells(a.position.y / cellSize)(a.position.x / cellSize + 1).ammos.nonEmpty) {
       "vertical"
     }
     else {
@@ -82,20 +82,24 @@ class Grid(cells: Array[Array[Cell]]) {
             cells(cy)(cx).maybeTank = Some(tank)
           }
 
-          var indexOfAmmoToRemoves: ListBuffer[Int] = collection.mutable.ListBuffer.empty
+          val indexOfAmmoToRemoves: ListBuffer[Int] = collection.mutable.ListBuffer.empty
           tank.projectiles.foreach(a => {
             //Remove it from last cell where she was
-            var iX = if((a.position.x - a.getDx) / cellSize >= cells.head.length) cells.head.length - 1 else (a.position.x - a.getDx) / cellSize
-            if(iX < 0) iX = 0
-            var iY = if ((a.position.y - a.getDy) / cellSize >= cells.length) cells.length - 1 else (a.position.y - a.getDy) / cellSize
-            if(iY < 0) iY = 0
-            cells(iY)(iX).maybeAmmo = None
+            cells.foreach {
+              _.foreach {
+                cell =>
+                  if (cell.ammos.nonEmpty) {
+                    val ammoIndex = cell.ammos.indexWhere(_.getId == a.getId)
+                    if(ammoIndex != -1) cell.ammos.remove(ammoIndex)
+                  }
+              }
+            }
 
             // Set the ammo in this cell
             if(a.bounceLeft >= 0) {
               val iX2 = if (a.position.x / cellSize >= cells.head.length) 74 else a.position.x / cellSize
               val iY2 = if (a.position.y / cellSize >= cells.length) 74 else a.position.y / cellSize
-              cells(iY2)(iX2).maybeAmmo = Some(a)
+              cells(iY2)(iX2).ammos += a
             }
             else {
               indexOfAmmoToRemoves.addOne(tank.projectiles.indexOf(a))

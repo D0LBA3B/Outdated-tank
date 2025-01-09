@@ -8,7 +8,7 @@ class Ammo( var position: Position,
             var size: Int,
             var bounceLeft: Int,
             var projectileColor: Color) {
-  private val id: String = ""
+  private val id: String = java.util.UUID.randomUUID.toString
   private val movement: Map[Int, (Int,Int)] = Map(
     0 -> (2, 0),
     30 -> (2, 1),
@@ -72,6 +72,7 @@ class Ammo( var position: Position,
     // Go forward one time
     position.x += dx
     position.y += dy
+
     bounceLeft -= 1
   }
 }
