@@ -41,8 +41,6 @@ class Ammo( var position: Position,
 
   // Triggered once it hit on a wall. To make the bounce effect
   def bounce(hitType: String): Unit = {
-    println(s"Ammo had angle $angle°")
-
     var (dx, dy) = movement.getOrElse(angle, (2, 0)) // by default, get angle 0
 
     // Go backward one time
@@ -65,9 +63,6 @@ class Ammo( var position: Position,
 
     //Reset the angle by the direction adjustment
     angle = movement.map(_.swap).getOrElse((dx,dy),0)
-
-    //println(s"Ammo have now angle $angle°")
-    //pintln(s"$bounceLeft left")
 
     // Go forward one time
     position.x += dx
