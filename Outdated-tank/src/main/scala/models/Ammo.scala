@@ -7,7 +7,9 @@ class Ammo( var position: Position,
             val damage: Int,
             var size: Int,
             var bounceLeft: Int,
-            var projectileColor: Color) {
+            var projectileColor: Color,
+            val owner: Tank, // TODO: Remove it when ammo won't hit himself right after he shot
+            var hasHitPlayer: Boolean = false) {
   private val id: String = java.util.UUID.randomUUID.toString
   private val movement: Map[Int, (Int,Int)] = Map(
     0 -> (2, 0),
@@ -69,5 +71,10 @@ class Ammo( var position: Position,
     position.y += dy
 
     bounceLeft -= 1
+  }
+
+  // Function that returns if the ammo needs to be removed
+  def isDead: Boolean = {
+    bounceLeft < 0 || hasHitPlayer
   }
 }

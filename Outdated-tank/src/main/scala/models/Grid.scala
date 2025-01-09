@@ -48,19 +48,39 @@ class Grid(cells: Array[Array[Cell]]) {
     }
   }
 
+  private def hitTank(ammo: Ammo): Boolean = {
+    players.foreach(
+      _.tanks.filter(_ != ammo.owner).foreach(
+        tank =>
+          tank.getTankShape.foreach(
+            pos =>
+              // Test if ammo has hit tank by using circle equation
+              if(math.pow(ammo.position.x - pos.x,2) + math.pow(ammo.position.y - pos.y,2) <= math.pow(ammo.size,2)){
+                tank.takeDamage(ammo.damage)
+                ammo.hasHitPlayer = true
+                return true
+              }
+          )
+      )
+    )
+
+    false
+  }
+
   def update(): Unit = {
-    for (player <- players) {
-      for (tank <- player.tanks) {
-        for (ammo <- tank.projectiles) {
-          ammo.move()
-          if(isWallAt(ammo.position)){
-            ammo.bounce(bounceType(ammo))
+    players.foreach(
+      _.tanks.foreach(
+        _.projectiles.foreach(
+          ammo => {
+            ammo.move()
+            if(isWallAt(ammo.position)){
+              ammo.bounce(bounceType(ammo))
+            }
+            hitTank(ammo)
           }
-          //checkTankCollision(ammo)
-        }
-        tank.projectiles.filterInPlace(_.damage > 0)
-      }
-    }
+        )
+      )
+    )
     updateCells()
     drawGrid()
   }
@@ -98,21 +118,18 @@ class Grid(cells: Array[Array[Cell]]) {
             }
 
             // Set the ammo in his new cell
-            if(a.bounceLeft >= 0) {
+            if(!a.isDead) {
               val iX2 = if (a.position.x / cellSize >= mapWidth) mapWidth - 1 else a.position.x / cellSize
               val iY2 = if (a.position.y / cellSize >= mapHeight) mapHeight - 1 else a.position.y / cellSize
               cells(iY2)(iX2).ammos += a
             }
             else {
-              ammoToRemove.addOne(a) // If no bounce left no update just ask to remove it
+              ammoToRemove.addOne(a)
             }
           })
 
           // Remove all the unwanted ammo
-          ammoToRemove.foreach(
-            a =>
-              tank.projectiles.remove(tank.projectiles.indexWhere(_.getId == a.getId))
-          )
+          ammoToRemove.foreach(a => tank.removeProjectile(a))
         }
       })
     })
@@ -148,7 +165,7 @@ class Grid(cells: Array[Array[Cell]]) {
             tank.projectiles.foreach(
               ammo => {
                 fg.setColor(ammo.projectileColor)
-                fg.drawFilledCircle(ammo.position.x, ammo.position.y, 5)
+                fg.drawFilledCircle(ammo.position.x, ammo.position.y, ammo.size)
               }
             )
           }

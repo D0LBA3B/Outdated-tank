@@ -17,7 +17,6 @@ class Tank(var position: Position,
   private var lastFireAt: Long = 0
   private[this] val cooldown: Long = fireCooldown
   private[this] val damage: Int = ammoDamage
-  private[this] val bounceLeft: Int = ammoBounceLeft
 
   private val validAngles: Seq[Int] = Seq(
     0, 30, 45, 60, 90, 120, 135, 150,
@@ -38,10 +37,15 @@ class Tank(var position: Position,
 
   def fire(): Unit = {
     if(System.currentTimeMillis() - cooldown >= lastFireAt) {
-      val newAmmo = new Ammo(position=position.copy(), angle=turretPosition, damage = damage, size = 1, bounceLeft = ammoBounceLeft, projectileColor = color)
+      val newAmmo = new Ammo(position=position.copy(), angle=turretPosition, damage = damage, size = 5, bounceLeft = ammoBounceLeft, projectileColor = color, owner = this)
       projectiles += newAmmo
       lastFireAt = System.currentTimeMillis()
     }
+  }
+
+  def removeProjectile(ammo :Ammo): Unit = {
+    val index: Int = this.projectiles.indexWhere(_.getId == ammo.getId)
+    if(index != -1) this.projectiles.remove(index)
   }
 
   def takeDamage(dmg: Int): Unit = {
