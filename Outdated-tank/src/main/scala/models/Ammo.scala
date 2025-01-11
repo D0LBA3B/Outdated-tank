@@ -8,6 +8,7 @@ class Ammo( var position: Position,
             var size: Int,
             var bounceLeft: Int,
             var projectileColor: Color,
+            val velocity: Int = 1,
             val owner: Tank, // TODO: Remove it when ammo won't hit himself right after he shot
             var hasHitPlayer: Boolean = false) {
   private val id: String = java.util.UUID.randomUUID.toString

@@ -72,16 +72,20 @@ class Grid(cells: Array[Array[Cell]]) {
       _.tanks.foreach(
         _.projectiles.foreach(
           ammo => {
-            ammo.move()
-            if(isWallAt(ammo.position)){
-              ammo.bounce(bounceType(ammo))
+            for(i <- 0 until ammo.velocity){
+              updateCells()
+              ammo.move()
+              if(isWallAt(ammo.position)){
+                ammo.bounce(bounceType(ammo))
+              }
+              hitTank(ammo)
             }
-            hitTank(ammo)
           }
         )
       )
     )
     updateCells()
+    clearDeadObject()
     drawGrid()
   }
 
@@ -96,7 +100,6 @@ class Grid(cells: Array[Array[Cell]]) {
             val oldCy = tank.lastPosition.y / cellSize
             cells(oldCy)(oldCx).maybeTank = None
           }
-
           if(tank.health > 0) {
             val cx = tank.position.x / cellSize
             val cy = tank.position.y / cellSize
@@ -104,7 +107,6 @@ class Grid(cells: Array[Array[Cell]]) {
           }
 
           // Ammo updating..
-          val ammoToRemove: ListBuffer[Ammo] = collection.mutable.ListBuffer.empty
           tank.projectiles.foreach(a => {
             //Remove it from last cell where she was
             cells.foreach {
@@ -118,19 +120,44 @@ class Grid(cells: Array[Array[Cell]]) {
             }
 
             // Set the ammo in his new cell
-            if(!a.isDead) {
-              val iX2 = if (a.position.x / cellSize >= mapWidth) mapWidth - 1 else a.position.x / cellSize
-              val iY2 = if (a.position.y / cellSize >= mapHeight) mapHeight - 1 else a.position.y / cellSize
-              cells(iY2)(iX2).ammos += a
-            }
-            else {
-              ammoToRemove.addOne(a)
-            }
+            val iX2 = if (a.position.x / cellSize >= mapWidth) mapWidth - 1 else a.position.x / cellSize
+            val iY2 = if (a.position.y / cellSize >= mapHeight) mapHeight - 1 else a.position.y / cellSize
+            cells(iY2)(iX2).ammos += a
           })
-
-          // Remove all the unwanted ammo
-          ammoToRemove.foreach(a => tank.removeProjectile(a))
         }
+      })
+    })
+  }
+
+  // Change Wall to OpenSpace if it's destroyed and remove dead ammo
+  private def clearDeadObject(): Unit = {
+    // Update terrain
+    cells.foreach(
+      _.foreach(
+        _.updateTerrain()
+      )
+    )
+
+    // Remove dead ammo from grid and tank
+    players.foreach(p => {
+      p.tanks.foreach(tank => {
+        val ammoToRemove: ListBuffer[Ammo] = collection.mutable.ListBuffer.empty
+
+        tank.projectiles.foreach(a => {
+          if (a.isDead) {
+            // Index calculation
+            val iX = if (a.position.x / cellSize >= mapWidth) mapWidth - 1 else a.position.x / cellSize
+            val iY = if (a.position.y / cellSize >= mapHeight) mapHeight - 1 else a.position.y / cellSize
+
+            // Remove from grid
+            val index = cells(iY)(iX).ammos.indexWhere(_.getId == a.getId)
+            if(index != -1) cells(iY)(iX).ammos.remove(index)
+            ammoToRemove.addOne(a)
+          }
+        })
+
+        // Remove from tank
+        ammoToRemove.foreach(a => tank.removeProjectile(a))
       })
     })
   }
