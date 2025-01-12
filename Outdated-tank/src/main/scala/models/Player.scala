@@ -1,8 +1,6 @@
 package isc.game.outdatedtank.models
 
-import java.awt.Color
-
-class Player(val name: String, val color: Color) {
+class Player(val name: String) {
   val tanks: collection.mutable.ListBuffer[Tank] = collection.mutable.ListBuffer.empty
 
   def addTank(tank: Tank): Unit = tanks += tank

@@ -49,21 +49,22 @@ class Grid(cells: Array[Array[Cell]]) {
   }
 
   private def hitTank(ammo: Ammo): Boolean = {
-    players.foreach(
-      _.tanks.filter(_ != ammo.owner).foreach(
-        tank =>
-          tank.getTankShape.foreach(
-            pos =>
-              // Test if ammo has hit tank by using circle equation
-              if(math.pow(ammo.position.x - pos.x,2) + math.pow(ammo.position.y - pos.y,2) <= math.pow(ammo.size,2)){
-                tank.takeDamage(ammo.damage)
-                ammo.hasHitPlayer = true
-                return true
-              }
-          )
-      )
-    )
+    players.foreach { player =>
+      player.tanks.filter(_ != ammo.owner).foreach { tank =>
+        // calculate the squared distance between the ammo and the tank center
+        val dx = ammo.position.x - tank.position.x
+        val dy = ammo.position.y - tank.position.y
+        val dist2 = dx * dx + dy * dy
 
+        val sumRadius = 16 + ammo.size // tank = 32×32 => 16
+        // if the squared distance is within the squared sum of the radis, we have a collision
+        if (dist2 <= sumRadius * sumRadius) {
+          tank.takeDamage(ammo.damage)
+          ammo.hasHitPlayer = true
+          return true
+        }
+      }
+    }
     false
   }
 
@@ -100,11 +101,10 @@ class Grid(cells: Array[Array[Cell]]) {
             val oldCy = tank.lastPosition.y / cellSize
             cells(oldCy)(oldCx).maybeTank = None
           }
-          if(tank.health > 0) {
-            val cx = tank.position.x / cellSize
-            val cy = tank.position.y / cellSize
-            cells(cy)(cx).maybeTank = Some(tank)
-          }
+
+          val cx = tank.position.x / cellSize
+          val cy = tank.position.y / cellSize
+          cells(cy)(cx).maybeTank = Some(tank)
 
           // Ammo updating..
           tank.projectiles.foreach(a => {
@@ -183,12 +183,8 @@ class Grid(cells: Array[Array[Cell]]) {
       players.foreach(
         _.tanks.foreach(
           tank => {
-            fg.setColor(tank.color)
-            tank.getTankShape.foreach(
-              position => {
-                fg.setPixel(position.x,position.y)
-              }
-            )
+            tank.drawTank(fg)
+
             tank.projectiles.foreach(
               ammo => {
                 fg.setColor(ammo.projectileColor)

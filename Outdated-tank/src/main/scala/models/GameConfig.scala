@@ -20,7 +20,7 @@ case class ControlsConfig(moveUp: String,
 
 case class SpecificityConfig(name: String, fireCooldown: Long, ammoDamage: Int, ammoBounceLeft: Int, health: Int)
 
-case class PlayerConfig(name: String, color: Color, controls: ControlsConfig, specificity: SpecificityConfig)
+case class PlayerConfig(name: String, controls: ControlsConfig, specificity: SpecificityConfig)
 
 case class GameConfig(resolution: Resolution, map: Battlefield, players: Seq[PlayerConfig])
 
@@ -54,7 +54,6 @@ object GameConfig {
     val players = playersConfig.map { player =>
       PlayerConfig(
         name = player.getString("name"),
-        color = AWTcolorconverter(player.getString("color")),
         controls = ControlsConfig(
           moveUp = player.getString("controls.moveUp"),
           moveDown = player.getString("controls.moveDown"),
