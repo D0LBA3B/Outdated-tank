@@ -18,8 +18,8 @@ object Main {
     implicit val materializer: Materializer = Materializer(system)
 
     println("Hello world!")
+    SoundPlayer.loadSounds()
     println("We are ready for the war")
-
     val game: Game = Game.getInstance(GameConfig.get)
     game.start()
 

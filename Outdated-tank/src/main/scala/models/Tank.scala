@@ -2,6 +2,8 @@ package isc.game.outdatedtank.models
 
 import hevs.graphics.FunGraphics
 import hevs.graphics.utils.GraphicsBitmap
+import isc.game.outdatedtank.SoundPlayer
+
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 import java.awt.{Color, Graphics2D}
@@ -75,6 +77,7 @@ class Tank(var position: Position,
 
   def fire(): Unit = {
     if(System.currentTimeMillis() - fireCooldown >= lastFireAt) {
+      SoundPlayer.playSound("shoot")
       val newAmmo = new Ammo(position=position.copy(), angle=turretPosition, damage = ammoDamage, size = 5, bounceLeft = ammoBounceLeft, projectileColor = Color.RED, owner = this, velocity = 3)
       projectiles += newAmmo
       lastFireAt = System.currentTimeMillis()

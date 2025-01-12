@@ -2,7 +2,7 @@ package isc.game.outdatedtank.models
 
 import hevs.graphics.FunGraphics
 import hevs.graphics.utils.GraphicsBitmap
-import isc.game.outdatedtank.MapReader
+import isc.game.outdatedtank.{MapReader, SoundPlayer}
 
 import java.awt.event.{KeyEvent, KeyListener}
 import java.awt.{Color, Desktop, Font, Image}
@@ -40,6 +40,7 @@ class Game private(val config: GameConfig) {
   }
 
   private def showMenu(): Unit = {
+    SoundPlayer.playSound("menu")
     val menuWidth = 750
     val menuHeight = 750
     val buttonWidth: Int = 200
@@ -112,6 +113,8 @@ class Game private(val config: GameConfig) {
 
   private def launchGame(): Unit = {
     println("Game Started!")
+    SoundPlayer.stopSound("menu")
+    SoundPlayer.playSound("game")
     val grid: Grid = new Grid(MapReader.ReadJson(config.map.name))
     val gameWindow = Game.getWindow()
 
