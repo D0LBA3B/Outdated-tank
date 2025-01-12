@@ -90,6 +90,7 @@ class Tank(var position: Position,
   }
 
   def takeDamage(dmg: Int): Unit = {
+    SoundPlayer.playRandomHitSound()
     health -= dmg
     if (health <= 0) {
       //TODO EXPLOSIONNNN

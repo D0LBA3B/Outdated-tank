@@ -114,7 +114,7 @@ class Game private(val config: GameConfig) {
   private def launchGame(): Unit = {
     println("Game Started!")
     SoundPlayer.stopSound("menu")
-    SoundPlayer.playSound("game")
+    SoundPlayer.playSound("dpoint")
     val grid: Grid = new Grid(MapReader.ReadJson(config.map.name))
     val gameWindow = Game.getWindow()
 
@@ -144,6 +144,7 @@ class Game private(val config: GameConfig) {
     //the game loop is executed in a separate thread to avoid blocking the event distribution thread (EDT), otherwise it won't work
     //this ensures that the user interface can always handle key events and remain reactive
     new Thread(() => {
+      SoundPlayer.playSound("game")
       while (isGameOver) {
         grid.players.foreach { gPlayer =>
           val configForPlayer = config.players.find(_.name == gPlayer.name).get
