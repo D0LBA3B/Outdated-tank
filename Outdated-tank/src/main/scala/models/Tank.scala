@@ -21,6 +21,7 @@ class Tank(var position: Position,
   var lastPosition: Position = null
   val projectiles: collection.mutable.ListBuffer[Ammo] = collection.mutable.ListBuffer.empty
 
+  // tank design credits: https://zintoki.itch.io/ground-shaker
   val originalBody = ImageIO.read(
     new URL(s"https://raw.githubusercontent.com/D0LBA3B/Outdated-tank/develop/Outdated-tank/src/main/resources/${specificityConfig.name}/Bodies/body_tracks.png")
   )
