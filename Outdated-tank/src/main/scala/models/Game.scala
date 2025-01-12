@@ -83,8 +83,9 @@ class Game private(val config: GameConfig) {
     // Menu events
     menuWindow.mainFrame.addMouseListener(new java.awt.event.MouseAdapter {
       override def mouseClicked(e: java.awt.event.MouseEvent): Unit = {
-        val mouseX = e.getX
-        val mouseY = e.getY
+        val insets = menuWindow.mainFrame.getInsets
+        val mouseX = e.getX - insets.left
+        val mouseY = e.getY - insets.top
 
         buttonLabels.zipWithIndex.foreach { case (label, index) =>
           val buttonX: Int = (menuWidth - buttonWidth) / 2
