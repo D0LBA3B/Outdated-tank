@@ -6,8 +6,9 @@ sealed trait Terrain {
   def getColor: Color
 }
 
-final case class Wall(hp: Int) extends Terrain {
+final case class Wall(var hp: Int) extends Terrain {
   override def getColor: Color = Color.GRAY
+  def damage(damage: Int): Unit = hp -= damage
 }
 
 case object OpenSpace extends Terrain {

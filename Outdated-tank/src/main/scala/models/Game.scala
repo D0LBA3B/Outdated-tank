@@ -6,7 +6,6 @@ import isc.game.outdatedtank.{MapReader, SoundPlayer}
 
 import java.awt.event.{KeyEvent, KeyListener}
 import java.awt.{Color, Desktop, Font, Image}
-import java.io.{File, FileInputStream}
 import java.net.{URI, URL}
 import javax.imageio.ImageIO
 import scala.collection.mutable
@@ -174,7 +173,7 @@ class Game private(val config: GameConfig) {
             if (pressedKeys.contains(rightCode)) dx += 1
 
             val newPos = Position(t.position.x + dx * grid.cellSize, t.position.y + dy * grid.cellSize)
-            if (!grid.isWallAt(newPos) && (dx != 0 || dy != 0)) {
+            if (!grid.isWallAt(newPos,50) && grid.inBounds(newPos)) {
               t.move(dx * grid.cellSize, dy * grid.cellSize)
             }
 

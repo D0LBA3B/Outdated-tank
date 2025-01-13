@@ -12,21 +12,19 @@ class Grid(cells: Array[Array[Cell]]) {
   val fg : FunGraphics = Game.getWindow(width = mapWidth , height = mapHeight);
   fg.displayFPS(true)
 
-  def isWallAt(pos: Position): Boolean = {
-    val ix: Int = pos.x / cellSize
-    val iy: Int = pos.y / cellSize
+  def isWallAt(pos: Position, damage: Int): Boolean = {
+    val ix: Int = if (pos.x / cellSize >= mapWidth) mapWidth - 1 else pos.x / cellSize
+    val iy: Int = if (pos.y / cellSize >= mapHeight) mapHeight - 1 else pos.y / cellSize
 
-    if (!inBounds(pos)) {
-      true
-    } else {
-      cells(iy)(ix).terrain match {
-        case Wall(_) => true
-        case _       => false
-      }
+    cells(iy)(ix).terrain match {
+      case wall: Wall =>
+        wall.damage(damage)
+        true
+      case _ => false
     }
   }
 
-  private def inBounds(position: Position): Boolean = position.x >= 0 && position.x < mapWidth * cellSize && position.y >= 0 && position.y < mapHeight * cellSize
+  def inBounds(position: Position): Boolean = position.x >= 0 && position.x < mapWidth * cellSize && position.y >= 0 && position.y < mapHeight * cellSize
 
   private def bounceType(a: Ammo): String = {
     // Make sur positions are natural number
@@ -62,8 +60,8 @@ class Grid(cells: Array[Array[Cell]]) {
         val dy = ammo.position.y - tank.position.y
         val dist2 = dx * dx + dy * dy
 
-        val sumRadius = 16 + ammo.size // tank = 32×32 => 16
-        // if the squared distance is within the squared sum of the radis, we have a collision
+        val sumRadius = 10
+        // if the squared distance is within the squared sum of the radius, we have a collision
         if (dist2 <= sumRadius * sumRadius) {
           tank.takeDamage(ammo.damage)
           ammo.hasHitPlayer = true
@@ -82,7 +80,7 @@ class Grid(cells: Array[Array[Cell]]) {
             for(i <- 0 until ammo.velocity){
               updateCells()
               ammo.move()
-              if(isWallAt(ammo.position)){
+              if(isWallAt(ammo.position,ammo.damage) || !inBounds(ammo.position)){
                 ammo.bounce(bounceType(ammo))
               }
               hitTank(ammo)
@@ -114,16 +112,14 @@ class Grid(cells: Array[Array[Cell]]) {
 
           // Ammo updating..
           tank.projectiles.foreach(a => {
-            //Remove it from last cell where she was
-            cells.foreach {
-              _.foreach {
-                cell =>
-                  if (cell.ammos.nonEmpty) {
-                    val ammoIndex = cell.ammos.indexWhere(_.getId == a.getId)
-                    if(ammoIndex != -1) cell.ammos.remove(ammoIndex)
-                  }
-              }
-            }
+            //Remove it from last cell where she was (We go back from one position)
+            var iX = a.position.x / cellSize - a.getDx
+            var iY = a.position.y / cellSize - a.getDy
+            if (iX >= mapWidth) iX = mapWidth - 1 else if (iX < 0) iX = 0
+            if (iY >= mapHeight) iY = mapHeight - 1 else if(iY < 0) iY = 0
+
+            val index = cells(iY)(iX).ammos.indexWhere(_.getId == a.getId)
+            if (index != -1) cells(iY)(iX).ammos.remove(index)
 
             // Set the ammo in his new cell
             val iX2 = if (a.position.x / cellSize >= mapWidth) mapWidth - 1 else a.position.x / cellSize
