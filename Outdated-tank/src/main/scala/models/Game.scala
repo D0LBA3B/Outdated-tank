@@ -39,7 +39,6 @@ class Game private(val config: GameConfig) {
   }
 
   private def showMenu(): Unit = {
-    SoundPlayer.playSound("menu")
     val menuWidth = 750
     val menuHeight = 750
     val buttonWidth: Int = 200
@@ -108,6 +107,7 @@ class Game private(val config: GameConfig) {
         }
       }
     })
+    SoundPlayer.playSound("menu", true)
   }
 
   private def launchGame(): Unit = {
@@ -143,7 +143,7 @@ class Game private(val config: GameConfig) {
     //the game loop is executed in a separate thread to avoid blocking the event distribution thread (EDT), otherwise it won't work
     //this ensures that the user interface can always handle key events and remain reactive
     new Thread(() => {
-      SoundPlayer.playSound("game")
+      SoundPlayer.playSound("game", true)
       while (isGameOver) {
         grid.players.foreach { gPlayer =>
           val configForPlayer = config.players.find(_.name == gPlayer.name).get
