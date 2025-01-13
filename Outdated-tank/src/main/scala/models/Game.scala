@@ -80,6 +80,7 @@ class Game private(val config: GameConfig) {
     }
 
     // Menu events
+    var lastClicked = System.currentTimeMillis()
     menuWindow.mainFrame.addMouseListener(new java.awt.event.MouseAdapter {
       override def mouseClicked(e: java.awt.event.MouseEvent): Unit = {
         val insets = menuWindow.mainFrame.getInsets
@@ -104,10 +105,29 @@ class Game private(val config: GameConfig) {
               case _ =>
             }
           }
+
+          // Sound skip
+          // mini-cooldown to prevent spamming and clip buggggg
+          if(System.currentTimeMillis() - lastClicked > 200) {
+            lastClicked = System.currentTimeMillis()
+            if (mouseX >= 30 && mouseX <= 30 + 60 &&
+              mouseY >= menuHeight - 50 && mouseY <= menuHeight - 50 + 30) {
+              // TODO find a way to clear correctly this string
+              DisplayCurrentSound(menuWindow, 30, menuHeight - 50, 60, 30, new Color(140, 129, 107, 255))
+              SoundPlayer.skipMenuClip
+            }
+          }
         }
       }
     })
+
     SoundPlayer.playSound("menu", true)
+    new Thread(() => {
+      while(true) {
+        DisplayCurrentSound(menuWindow, 30, menuHeight - 50, 60, 30)
+        Thread.sleep(500)
+      }
+    }).start()
   }
 
   private def launchGame(): Unit = {
@@ -190,6 +210,18 @@ class Game private(val config: GameConfig) {
         Thread.sleep(20)
       }
     }).start()
+  }
+
+  private def DisplayCurrentSound(menuWindow: FunGraphics, skipButtonX: Int, skipButtonY: Int, skipButtonWidth: Int, skipButtonHeight: Int, color: Color = Color.white): Unit = {
+    val soundName = SoundPlayer.getCurrentMenuSoundName()
+
+    val text = s"Sound: $soundName"
+    val fontSize = 15
+    val font = new Font("Segoe UI Emoji", Font.PLAIN, fontSize)
+    menuWindow.drawString(posX = skipButtonX, posY = skipButtonY - 10, str = text, color = color, font = font)
+    menuWindow.setColor(Color.GRAY)
+    menuWindow.drawFillRect(skipButtonX, skipButtonY, skipButtonWidth, skipButtonHeight)
+    menuWindow.drawString(posX = skipButtonX + 10, posY = skipButtonY + skipButtonHeight - 10, str = "Skip", color = Color.WHITE, font = font)
   }
 
   private def charToKeyCode(c: Char): Int = KeyEvent.getExtendedKeyCodeForChar(c.toInt)

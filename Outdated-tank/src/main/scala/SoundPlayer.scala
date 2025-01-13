@@ -1,10 +1,10 @@
 package isc.game.outdatedtank
 
-import java.io.File
-import java.net.URL
 import javax.sound.sampled._
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
+
+case class AudioClip(clip: Clip, name: String)
 
 //interesting sites:
 // https://www.sounds-resource.com/pc_computer/warthunder/
@@ -12,19 +12,25 @@ import scala.util.Random
 // https://pixabay.com/sound-effects/
 object SoundPlayer {
 
-  private var menuClips: ListBuffer[Clip] = ListBuffer.empty
-  private var shootClip: Clip = null
-  private var inGameClip: Clip = null
-  private var dPointClip: Clip = null
-  private val hitsClip: ListBuffer[Clip] = ListBuffer.empty
+  private val menuClips: ListBuffer[AudioClip] = ListBuffer.empty
+  private var shootClip: AudioClip = null
+  private var inGameClip: AudioClip = null
+  private var dPointClip: AudioClip = null
+  private val hitsClip: ListBuffer[AudioClip] = ListBuffer.empty
   private var lastHitIndex: Int = 0
+  private var lastMenuIndex: Int = 0
 
   def loadSounds(): Unit = {
     // TODO MORE MENU SOUNDS WITH WAAAAAAR THUNDER CONTENT & PLAY MUSIC BTN
+    // + regex pattern for menu-* and ingame hit
     menuClips.addOne(loadClip("over-there.wav"))
+    menuClips.addOne(loadClip("menu-fr-1.wav"))
     menuClips.addOne(loadClip("menu-hoiiv.wav"))
     menuClips.addOne(loadClip("menu-bad.wav"))
     menuClips.addOne(loadClip("menu-wt.wav"))
+    menuClips.addOne(loadClip("menu-hoiiv-2.wav"))
+    menuClips.addOne(loadClip("menu-sw-1.wav"))
+    menuClips.addOne(loadClip("varsovienne-warszawianka.wav"))
     shootClip = loadClip("fire-1.wav")
     inGameClip = loadClip("game-1.wav")
     dPointClip = loadClip("attack-the-d-point-war-thunder.wav")
@@ -57,24 +63,49 @@ object SoundPlayer {
 
   private def getClip(soundId: String): Clip = {
     soundId match {
-      case "menu"  => getRandomMenuClip()
-      case "shoot" => shootClip
-      case "game" => inGameClip
-      case "dpoint" => dPointClip
-      case _       => null
+      case "menu" => getRandomMenuClip()
+      case "shoot" => shootClip.clip
+      case "game" => inGameClip.clip
+      case "dpoint" => dPointClip.clip
+      case _ => null
     }
   }
 
-  private def getRandomMenuClip(): Clip = {
+  private def getRandomMenuClip(lastIndex: Int = -1): Clip = {
     if (menuClips.nonEmpty) {
-      val randomIndex = Random.nextInt(menuClips.size)
-      return menuClips(randomIndex)
+      if(lastIndex != -1) {
+        var index = 0
+        do {
+          index = Random.nextInt(menuClips.size)
+        } while (index == lastIndex)
+        return menuClips(index).clip
+      }
+      else {
+        val randomIndex = Random.nextInt(menuClips.size)
+        return menuClips(randomIndex).clip
+      }
     }
     null
   }
 
+  def skipMenuClip = {
+    val currentClip = menuClips.find(_.clip.isRunning).getOrElse(menuClips(0))
+    if(currentClip != null) {
+      currentClip.clip.stop()
+      val nextClip = getRandomMenuClip(menuClips.indexOf(currentClip))
+      nextClip.setFramePosition(0)
+      nextClip.start()
+      nextClip.loop(Clip.LOOP_CONTINUOUSLY)
+    }
+  }
+
+  def getCurrentMenuSoundName(): String = {
+    //how to access the filename directly in clip?????
+    menuClips.find(_.clip.isRunning).map(_.name).getOrElse("No sound played")
+  }
+
   def playRandomHitSound(): Unit = {
-    val alreadyPlaying = hitsClip.exists(_.isRunning)
+    val alreadyPlaying = hitsClip.map(_.clip).exists(_.isRunning)
 
     if (!alreadyPlaying && hitsClip.nonEmpty) {
       var newIndex = -1
@@ -87,17 +118,17 @@ object SoundPlayer {
 
       lastHitIndex = newIndex
       val chosenClip = hitsClip(newIndex)
-      chosenClip.setFramePosition(0)
-      chosenClip.start()
+      chosenClip.clip.setFramePosition(0)
+      chosenClip.clip.start()
     }
   }
 
   // https://stackoverflow.com/questions/9438718/playing-wav-files-in-scala
-  private def loadClip(src: String): Clip = {
+  private def loadClip(src: String): AudioClip = {
     val file = getClass().getResourceAsStream(s"/sfx/${src}")
     val audioIn = AudioSystem.getAudioInputStream(file)
     val clip = AudioSystem.getClip
     clip.open(audioIn)
-    clip
+    AudioClip(clip, src)
   }
 }
