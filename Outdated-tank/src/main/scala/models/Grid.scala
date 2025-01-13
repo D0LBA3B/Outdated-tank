@@ -44,7 +44,13 @@ class Grid(cells: Array[Array[Cell]]) {
       "vertical"
     }
     else {
-      "both"
+      // More precise bounce movement
+      if(a.position.x % cellSize > a.position.y % cellSize) {
+        "horizontal"
+      }
+      else {
+        "vertical"
+      }
     }
   }
 
