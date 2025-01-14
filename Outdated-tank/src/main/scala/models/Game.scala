@@ -32,13 +32,15 @@ object Game {
 }
 
 class Game private(val config: GameConfig) {
-  var isGameOver: Boolean = true
+  var isGameInProgress: Boolean = false
+  var isMenuActive: Boolean = true
 
   def start(): Unit = {
     showMenu()
   }
 
   private def showMenu(): Unit = {
+    isMenuActive = true
     val menuWidth = 750
     val menuHeight = 750
     val buttonWidth: Int = 200
@@ -96,6 +98,7 @@ class Game private(val config: GameConfig) {
             label match {
               case "FIGHT \u2694" => {
                 menuWindow.mainFrame.removeMouseListener(this)
+                isMenuActive = false
                 launchGame()
               }
               case "OPTIONS" => println("TODO")
@@ -123,7 +126,7 @@ class Game private(val config: GameConfig) {
 
     SoundPlayer.playSound("menu", true)
     new Thread(() => {
-      while(true) {
+      while(isMenuActive) {
         DisplayCurrentSound(menuWindow, 30, menuHeight - 50, 60, 30)
         Thread.sleep(500)
       }
@@ -132,6 +135,7 @@ class Game private(val config: GameConfig) {
 
   private def launchGame(): Unit = {
     println("Game Started!")
+    isGameInProgress = true
     SoundPlayer.stopSound("menu")
     SoundPlayer.playSound("dpoint")
     val grid: Grid = new Grid(MapReader.ReadJson(config.map.name))
@@ -139,7 +143,7 @@ class Game private(val config: GameConfig) {
 
     var tmpI = 1
     config.players.foreach(player => {
-      var gamePlayer = new Player(player.name)
+      val gamePlayer = new Player(player.name)
       gamePlayer.tanks.addOne(new Tank(position = Position(tmpI, tmpI), specificityConfig = player.specificity))
       grid.players.addOne(gamePlayer)
       tmpI += 5
@@ -164,7 +168,14 @@ class Game private(val config: GameConfig) {
     //this ensures that the user interface can always handle key events and remain reactive
     new Thread(() => {
       SoundPlayer.playSound("game", true)
-      while (isGameOver) {
+      while (isGameInProgress) {
+
+        //if one of the players is out of tanks (max 2 players for now)
+        val looser = grid.players.filter(_.tanks.isEmpty)
+        if(looser.length > 0) {
+          EndGame(looser.head)
+        }
+
         grid.players.foreach { gPlayer =>
           val configForPlayer = config.players.find(_.name == gPlayer.name).get
           val upChar = configForPlayer.controls.moveUp.head.toLower
@@ -230,6 +241,12 @@ class Game private(val config: GameConfig) {
     val optionsWindow = Game.getWindow()
     optionsWindow.clear(new Color(140, 129, 107, 255))
     optionsWindow.mainFrame.getKeyListeners.foreach(k => optionsWindow.mainFrame.removeKeyListener(k))
+  }
+
+  private def EndGame(player: Player): Unit = {
+    val endWindow = Game.getWindow()
+    endWindow.mainFrame.getKeyListeners.foreach(k => endWindow.mainFrame.removeKeyListener(k))
+    isGameInProgress = false
   }
 
   //TODO: Setup live screen capture here instead

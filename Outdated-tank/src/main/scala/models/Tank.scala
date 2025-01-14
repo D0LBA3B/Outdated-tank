@@ -99,12 +99,11 @@ class Tank(var position: Position,
     if(index != -1) this.projectiles.remove(index)
   }
 
-  def takeDamage(dmg: Int): Unit = {
+  def takeDamage(dmg: Int): Boolean = {
     SoundPlayer.playRandomHitSound()
     health -= dmg
-    if (health <= 0) {
-      //TODO EXPLOSIONNNN
-    }
+    if (health <= 0) true
+    else false
   }
 
   def drawTank(fg: FunGraphics): Unit = {

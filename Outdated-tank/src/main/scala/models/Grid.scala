@@ -63,7 +63,10 @@ class Grid(cells: Array[Array[Cell]]) {
         val sumRadius = 10
         // if the squared distance is within the squared sum of the radius, we have a collision
         if (dist2 <= sumRadius * sumRadius) {
-          tank.takeDamage(ammo.damage)
+          // true if tank is dead
+          if(tank.takeDamage(ammo.damage)) {
+            player.tanks.remove(player.tanks.indexOf(tank))
+          }
           ammo.hasHitPlayer = true
           return true
         }
