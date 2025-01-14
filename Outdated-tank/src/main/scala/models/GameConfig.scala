@@ -113,7 +113,7 @@ object GameConfig {
 
   private def mapNameFinder(input: String): String = {
     val mapFileName = s"$input.json"
-    val mapPath = Paths.get("./res", mapFileName)
+    val mapPath = Paths.get(new URL(s"https://raw.githubusercontent.com/D0LBA3B/Outdated-tank/develop/Outdated-tank/src/main/resources/Maps/map1.json"), mapFileName)
 
     if (Files.exists(mapPath)) mapFileName
     else "map1.json"
