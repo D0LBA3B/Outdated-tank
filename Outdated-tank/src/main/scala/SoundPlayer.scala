@@ -16,6 +16,7 @@ object SoundPlayer {
   private var shootClip: AudioClip = null
   private var inGameClip: AudioClip = null
   private var dPointClip: AudioClip = null
+  private var endGameClip: AudioClip = null
   private val hitsClip: ListBuffer[AudioClip] = ListBuffer.empty
   private var lastHitIndex: Int = 0
   private var lastMenuIndex: Int = 0
@@ -34,6 +35,7 @@ object SoundPlayer {
     shootClip = loadClip("fire-1.wav")
     inGameClip = loadClip("game-1.wav")
     dPointClip = loadClip("attack-the-d-point-war-thunder.wav")
+    endGameClip = loadClip("fr_bomb_success_v3_r5_t1_mood_high.wav")
     hitsClip.addOne(loadClip("fr_aircraft_damaged_v1_r3_t1_mood_med.wav"))
     hitsClip.addOne(loadClip("fr_damaged_water_v1_r4_t1_mood_high.wav"))
     hitsClip.addOne(loadClip("fr_aircraft_destroyed_v2_r4_t1_mood_med.wav"))
@@ -67,6 +69,7 @@ object SoundPlayer {
       case "shoot" => shootClip.clip
       case "game" => inGameClip.clip
       case "dpoint" => dPointClip.clip
+      case "endgame" => endGameClip.clip
       case _ => null
     }
   }

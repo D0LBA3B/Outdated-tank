@@ -255,9 +255,12 @@ class Game private(val config: GameConfig) {
   }
 
   private def showEndGame(winner: Player): Unit = {
+    SoundPlayer.stopSound("game")
     val endWindow = Game.getWindow()
     endWindow.mainFrame.getKeyListeners.foreach(k => endWindow.mainFrame.removeKeyListener(k))
     isGameInProgress = false
+    Thread.sleep(200)
+    SoundPlayer.playSound("endgame")
 
     val darkOverlayColor = new Color(0, 0, 0, 150)
     endWindow.setColor(darkOverlayColor)
