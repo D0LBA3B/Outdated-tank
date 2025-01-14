@@ -169,13 +169,6 @@ class Game private(val config: GameConfig) {
     new Thread(() => {
       SoundPlayer.playSound("game", true)
       while (isGameInProgress) {
-
-        //if one of the players is out of tanks (max 2 players for now)
-        val looser = grid.players.filter(_.tanks.isEmpty)
-        if(looser.length > 0) {
-          EndGame(looser.head)
-        }
-
         grid.players.foreach { gPlayer =>
           val configForPlayer = config.players.find(_.name == gPlayer.name).get
           val upChar = configForPlayer.controls.moveUp.head.toLower
@@ -219,6 +212,13 @@ class Game private(val config: GameConfig) {
         }
         grid.update()
         Thread.sleep(20)
+
+        //if one of the players is out of tanks (max 2 players for now)
+        val looser = grid.players.filter(_.tanks.isEmpty)
+        if(looser.length > 0) {
+          println("THIS IS THE END")
+          showEndGame(grid.players.filter(!_.tanks.isEmpty).head)
+        }
       }
     }).start()
   }
@@ -237,17 +237,44 @@ class Game private(val config: GameConfig) {
 
   private def charToKeyCode(c: Char): Int = KeyEvent.getExtendedKeyCodeForChar(c.toInt)
 
-  private def ShowOptions(): Unit = {
+  private def showOptions(): Unit = {
     val optionsWindow = Game.getWindow()
     optionsWindow.clear(new Color(140, 129, 107, 255))
     optionsWindow.mainFrame.getKeyListeners.foreach(k => optionsWindow.mainFrame.removeKeyListener(k))
   }
 
-  private def EndGame(player: Player): Unit = {
+  private def showEndGame(winner: Player): Unit = {
     val endWindow = Game.getWindow()
     endWindow.mainFrame.getKeyListeners.foreach(k => endWindow.mainFrame.removeKeyListener(k))
     isGameInProgress = false
-  }
 
+    val darkOverlayColor = new Color(0, 0, 0, 150)
+    endWindow.setColor(darkOverlayColor)
+    endWindow.drawFillRect(0, 0, endWindow.width, endWindow.height)
+
+    val font = new Font("Segoe UI Emoji", Font.PLAIN, 75)
+    val message = s"${winner.name} won!"
+    val metrics = endWindow.mainFrame.getFontMetrics(font)
+    val textWidth = metrics.stringWidth(message)
+    val textHeight = metrics.getHeight
+    val textX = (endWindow.width - textWidth/2) / 2
+    val textY = (endWindow.height - textHeight) / 2
+    endWindow.drawString(posX = textX / 2, posY = textY, str = message, color = Color.WHITE, fontSize = 75, fontFamily = "Segoe UI Emoji")
+
+    val instructionFont = new Font("Segoe UI Emoji", Font.PLAIN, 20)
+    val instruction = "Press ESC to return to menu"
+    val instrMetrics = endWindow.mainFrame.getFontMetrics(instructionFont)
+    val instrWidth = instrMetrics.stringWidth(instruction)
+    endWindow.drawString(posX = (endWindow.width - instrWidth) / 2, posY = textY + textHeight + 30, str = instruction, color = Color.WHITE, fontSize = 20, fontFamily = "Segoe UI Emoji")
+
+    endWindow.mainFrame.addKeyListener(new KeyListener {
+      override def keyTyped(e: KeyEvent): Unit = {}
+      override def keyReleased(e: KeyEvent): Unit = {}
+
+      override def keyPressed(e: KeyEvent): Unit = {
+        if (e.getKeyCode == KeyEvent.VK_ESCAPE) showMenu()
+      }
+    })
+  }
   //TODO: Setup live screen capture here instead
 }
