@@ -78,7 +78,17 @@ class Tank(var position: Position,
   def fire(): Unit = {
     if(System.currentTimeMillis() - fireCooldown >= lastFireAt) {
       SoundPlayer.playSound("shoot")
-      val newAmmo = new Ammo(position=position.copy(), angle=turretPosition, damage = ammoDamage, size = 5, bounceLeft = ammoBounceLeft, projectileColor = Color.RED, owner = this, velocity = 3)
+
+      var ammoColor = Color.RED
+      specificityConfig.name match {
+        case "Red" => ammoColor = Color.RED
+        case "Blue" => ammoColor = Color.BLUE
+        case "Purple" => ammoColor = new Color(169,0,206,255)
+        case "Camo" => ammoColor = new Color(125,148,56,255)
+        case "Desert" => ammoColor = new Color(190,160,100,255)
+      }
+
+      val newAmmo = new Ammo(position=position.copy(), angle=turretPosition, damage = ammoDamage, size = 5, bounceLeft = ammoBounceLeft, projectileColor = ammoColor, owner = this, velocity = 3)
       projectiles += newAmmo
       lastFireAt = System.currentTimeMillis()
     }
