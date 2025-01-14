@@ -36,7 +36,7 @@ object GameConfig {
     )
 
     val battlefield = Battlefield(
-      name = mapNameFinder(config.getString("isc.game.outdatedtank.game.map.name")),
+      name = s"https://raw.githubusercontent.com/D0LBA3B/Outdated-tank/develop/Outdated-tank/src/main/resources/Maps/${config.getString("isc.game.outdatedtank.game.map.name")}.json",
       terrainColor = config.getString("isc.game.outdatedtank.game.map.terrainColor"),
     )
 
@@ -109,13 +109,5 @@ object GameConfig {
         println(s"Error parsing color input: $input. Using default color RED.")
         Color.RED
     }
-  }
-
-  private def mapNameFinder(input: String): String = {
-    val mapFileName = s"$input.json"
-    val mapPath = Paths.get(new URL(s"https://raw.githubusercontent.com/D0LBA3B/Outdated-tank/develop/Outdated-tank/src/main/resources/Maps/map1.json"), mapFileName)
-
-    if (Files.exists(mapPath)) mapFileName
-    else "map1.json"
   }
 }

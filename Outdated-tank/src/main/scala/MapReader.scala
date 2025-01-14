@@ -5,7 +5,7 @@ import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 
 object MapReader {
   def ReadJson(fileName: String): Array[Array[Cell]] = {
-    val jsonContent = scala.io.Source.fromFile(s"./res/$fileName")
+    val jsonContent = scala.io.Source.fromURL(fileName)
     val jsonData = jsonContent.getLines.mkString
     jsonContent.close();
 
