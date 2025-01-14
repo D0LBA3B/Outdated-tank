@@ -63,7 +63,7 @@ object SoundPlayer {
 
   private def getClip(soundId: String): Clip = {
     soundId match {
-      case "menu" => getRandomMenuClip()
+      case "menu" => menuClips.find(_.clip.isRunning).map(_.clip).getOrElse(getRandomMenuClip())
       case "shoot" => shootClip.clip
       case "game" => inGameClip.clip
       case "dpoint" => dPointClip.clip
