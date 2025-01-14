@@ -9,6 +9,8 @@ import java.awt.{Color, Desktop, Font, Image}
 import java.net.{URI, URL}
 import javax.imageio.ImageIO
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
+import scala.util.Random
 
 object Game {
   private var gameInstance: Game = null
@@ -141,12 +143,21 @@ class Game private(val config: GameConfig) {
     val grid: Grid = new Grid(MapReader.ReadJson(config.map.name))
     val gameWindow = Game.getWindow()
 
-    var tmpI = 1
+    val positions: ListBuffer[Position] = ListBuffer(
+      Position(30, 30),
+      Position(450, 275),
+      Position(550, 600),
+      Position(180, 300),
+      Position(30, 650),
+      Position(650, 650),
+      Position(650, 30),
+    )
     config.players.foreach(player => {
       val gamePlayer = new Player(player.name)
-      gamePlayer.tanks.addOne(new Tank(position = Position(tmpI, tmpI), specificityConfig = player.specificity))
+      val position = positions(Random.nextInt(positions.size))
+      positions.remove(positions.indexOf(position))
+      gamePlayer.tanks.addOne(new Tank(position = position, specificityConfig = player.specificity))
       grid.players.addOne(gamePlayer)
-      tmpI += 5
     })
 
     val pressedKeys = mutable.Set[Int]()
