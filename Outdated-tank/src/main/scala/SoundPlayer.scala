@@ -20,6 +20,7 @@ object SoundPlayer {
   private val hitsClip: ListBuffer[AudioClip] = ListBuffer.empty
   private var lastHitIndex: Int = 0
   private var lastMenuIndex: Int = 0
+  private var isLoadingFailed: Boolean = false
 
   def loadSounds(): Unit = {
     // TODO MORE MENU SOUNDS WITH WAAAAAAR THUNDER CONTENT & PLAY MUSIC BTN
@@ -46,6 +47,8 @@ object SoundPlayer {
   }
 
   def playSound(soundId: String, loop: Boolean = false): Unit = {
+    if(isLoadingFailed) return
+
     val clip = getClip(soundId)
     if (clip != null) {
       clip.clip.setFramePosition(clip.framePosition)
@@ -56,6 +59,8 @@ object SoundPlayer {
   }
 
   def stopSound(soundId: String): Unit = {
+    if(isLoadingFailed) return
+
     val clip = getClip(soundId).clip
     if (clip != null && clip.isRunning) {
       clip.stop()
@@ -91,7 +96,9 @@ object SoundPlayer {
     null
   }
 
-  def skipMenuClip = {
+  def skipMenuClip(): Unit = {
+    if(isLoadingFailed) return
+
     val currentClip = menuClips.find(_.clip.isRunning).getOrElse(menuClips(0))
     if(currentClip != null) {
       currentClip.clip.stop()
@@ -102,7 +109,9 @@ object SoundPlayer {
     }
   }
 
-  def getCurrentMenuSoundName(): String = {
+  def getCurrentMenuSoundName: String = {
+    if(isLoadingFailed) return "No sound"
+
     //how to access the filename directly in clip?????
     menuClips.find(_.clip.isRunning).map(_.name).getOrElse("No sound played")
   }
@@ -128,14 +137,21 @@ object SoundPlayer {
 
   // https://stackoverflow.com/questions/9438718/playing-wav-files-in-scala
   private def loadClip(src: String): AudioClip = {
-    val file = getClass().getResourceAsStream(s"/sfx/${src}")
-    val audioIn = AudioSystem.getAudioInputStream(file)
-    val clip = AudioSystem.getClip
-    clip.open(audioIn)
+    try {
+      val file = getClass().getResourceAsStream(s"/sfx/${src}")
+      val audioIn = AudioSystem.getAudioInputStream(file)
+      val clip = AudioSystem.getClip
+      clip.open(audioIn)
 
-    var framePosition = 0
-    if(src == "fire-1.wav") framePosition = 40000
+      var framePosition = 0
+      if (src == "fire-1.wav") framePosition = 40000
 
-    AudioClip(clip, src, framePosition)
+      return AudioClip(clip, src, framePosition)
+    }
+    catch {
+      case e: Exception =>
+        isLoadingFailed = true
+    }
+    AudioClip(clip = null, name = "", framePosition = 0)
   }
 }

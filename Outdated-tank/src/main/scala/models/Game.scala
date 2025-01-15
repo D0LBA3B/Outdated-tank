@@ -50,6 +50,7 @@ class Game private(val config: GameConfig) {
     val buttonSpacing: Int = 20
     val fontSize: Int = 30
     val menuWindow = Game.getWindow(menuWidth, menuHeight)
+    menuWindow.displayFPS(false)
     menuWindow.clear(new Color(140, 129, 107, 255))
     menuWindow.mainFrame.getKeyListeners.foreach(k => menuWindow.mainFrame.removeKeyListener(k))
 
@@ -142,6 +143,7 @@ class Game private(val config: GameConfig) {
     SoundPlayer.playSound("dpoint")
     val grid: Grid = new Grid(MapReader.ReadJson(config.map.name))
     val gameWindow = Game.getWindow()
+    gameWindow.displayFPS(true)
 
     val positions: ListBuffer[Position] = ListBuffer(
       Position(30, 30),
@@ -226,16 +228,16 @@ class Game private(val config: GameConfig) {
 
         //if one of the players is out of tanks (max 2 players for now)
         val looser = grid.players.filter(_.tanks.isEmpty)
-        if(looser.length > 0) {
+        if(looser.nonEmpty) {
           println("THIS IS THE END")
-          showEndGame(grid.players.filter(!_.tanks.isEmpty).head)
+          showEndGame(grid.players.filter(_.tanks.nonEmpty).head)
         }
       }
     }).start()
   }
 
   private def DisplayCurrentSound(menuWindow: FunGraphics, skipButtonX: Int, skipButtonY: Int, skipButtonWidth: Int, skipButtonHeight: Int, color: Color = Color.white): Unit = {
-    val soundName = SoundPlayer.getCurrentMenuSoundName()
+    val soundName = SoundPlayer.getCurrentMenuSoundName
 
     val text = s"Sound: $soundName"
     val fontSize = 15

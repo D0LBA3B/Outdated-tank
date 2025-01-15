@@ -10,7 +10,6 @@ class Grid(cells: Array[Array[Cell]]) {
   val cellSize: Int = GameConfig.get.resolution.cellSize
   val players: ListBuffer[Player] = ListBuffer()
   val fg : FunGraphics = Game.getWindow(width = mapWidth , height = mapHeight);
-  fg.displayFPS(true)
 
   def isWallAt(pos: Position, damage: Int): Boolean = {
     var iX = pos.x / cellSize
