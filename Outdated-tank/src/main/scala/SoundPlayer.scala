@@ -24,11 +24,12 @@ object SoundPlayer {
 
   def loadSounds(): Unit = {
     menuClips.addOne(loadClip("over-there.wav", "Over There"))
-    menuClips.addOne(loadClip("menu-fr-1.wav", "Vous n'aurez pas l'Alsace et la Lorraine"))
-    menuClips.addOne(loadClip("menu-hoiiv.wav", "HOI IV"))
-    menuClips.addOne(loadClip("menu-wt.wav", "War Thunder"))
-    menuClips.addOne(loadClip("menu-hoiiv-2.wav", "HOI IV 2"))
-    menuClips.addOne(loadClip("menu-sw-1.wav", "Rufst du, mein Vaterland"))
+    menuClips.addOne(loadClip("menu-db.wav", "Marche de la 2ème DB"))
+    menuClips.addOne(loadClip("menu-star.wav", "Star Spangled Banner"))
+    menuClips.addOne(loadClip("menu-pekin.wav", "Debout Les Gars"))
+    menuClips.addOne(loadClip("menu-gars.wav", "Debout Les Gars"))
+    menuClips.addOne(loadClip("menu-boogie.wav", "Boogie Woogie Bugle Boy"))
+    menuClips.addOne(loadClip("menu-darvis.wav", "The End of the World"))
     menuClips.addOne(loadClip("varsovienne-warszawianka.wav", "warszawianka"))
     shootClip = loadClip("fire-1.wav", "Hit")
     inGameClip = loadClip("game-1.wav", "Game")
