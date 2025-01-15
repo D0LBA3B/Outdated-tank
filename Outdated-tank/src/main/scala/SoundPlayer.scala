@@ -23,27 +23,24 @@ object SoundPlayer {
   private var isLoadingFailed: Boolean = false
 
   def loadSounds(): Unit = {
-    // TODO MORE MENU SOUNDS WITH WAAAAAAR THUNDER CONTENT & PLAY MUSIC BTN
-    // + regex pattern for menu-* and ingame hit
-    menuClips.addOne(loadClip("over-there.wav"))
-    menuClips.addOne(loadClip("menu-fr-1.wav"))
-    menuClips.addOne(loadClip("menu-hoiiv.wav"))
-    menuClips.addOne(loadClip("menu-bad.wav"))
-    menuClips.addOne(loadClip("menu-wt.wav"))
-    menuClips.addOne(loadClip("menu-hoiiv-2.wav"))
-    menuClips.addOne(loadClip("menu-sw-1.wav"))
-    menuClips.addOne(loadClip("varsovienne-warszawianka.wav"))
-    shootClip = loadClip("fire-1.wav")
-    inGameClip = loadClip("game-1.wav")
-    dPointClip = loadClip("attack-the-d-point-war-thunder.wav")
-    endGameClip = loadClip("fr_bomb_success_v3_r5_t1_mood_high.wav")
-    hitsClip.addOne(loadClip("fr_aircraft_damaged_v1_r3_t1_mood_med.wav"))
-    hitsClip.addOne(loadClip("fr_damaged_water_v1_r4_t1_mood_high.wav"))
-    hitsClip.addOne(loadClip("fr_aircraft_destroyed_v2_r4_t1_mood_med.wav"))
-    hitsClip.addOne(loadClip("fr_damaged_pilot_v1_r1_t1_mood_high.wav"))
-    hitsClip.addOne(loadClip("fr_damaged_engine_v1_r3_t1_mood_high.wav"))
-    hitsClip.addOne(loadClip("fr_damaged_pilot_v1_r5_t1_mood_high.wav"))
-    hitsClip.addOne(loadClip("fr_player_killed_ally_v1_r2_t1_mood_med.wav"))
+    menuClips.addOne(loadClip("over-there.wav", "Over There"))
+    menuClips.addOne(loadClip("menu-fr-1.wav", "Vous n'aurez pas l'Alsace et la Lorraine"))
+    menuClips.addOne(loadClip("menu-hoiiv.wav", "HOI IV"))
+    menuClips.addOne(loadClip("menu-wt.wav", "War Thunder"))
+    menuClips.addOne(loadClip("menu-hoiiv-2.wav", "HOI IV 2"))
+    menuClips.addOne(loadClip("menu-sw-1.wav", "Rufst du, mein Vaterland"))
+    menuClips.addOne(loadClip("varsovienne-warszawianka.wav", "warszawianka"))
+    shootClip = loadClip("fire-1.wav", "Hit")
+    inGameClip = loadClip("game-1.wav", "Game")
+    dPointClip = loadClip("attack-the-d-point-war-thunder.wav", "D-Point")
+    endGameClip = loadClip("fr_bomb_success_v3_r5_t1_mood_high.wav", "B1")
+    hitsClip.addOne(loadClip("fr_aircraft_damaged_v1_r3_t1_mood_med.wav", "B1"))
+    hitsClip.addOne(loadClip("fr_damaged_water_v1_r4_t1_mood_high.wav", "B2"))
+    hitsClip.addOne(loadClip("fr_aircraft_destroyed_v2_r4_t1_mood_med.wav", "B3"))
+    hitsClip.addOne(loadClip("fr_damaged_pilot_v1_r1_t1_mood_high.wav", "B4"))
+    hitsClip.addOne(loadClip("fr_damaged_engine_v1_r3_t1_mood_high.wav", "B5"))
+    hitsClip.addOne(loadClip("fr_damaged_pilot_v1_r5_t1_mood_high.wav", "B6"))
+    hitsClip.addOne(loadClip("fr_player_killed_ally_v1_r2_t1_mood_med.wav", "B7"))
   }
 
   def playSound(soundId: String, loop: Boolean = false): Unit = {
@@ -136,7 +133,7 @@ object SoundPlayer {
   }
 
   // https://stackoverflow.com/questions/9438718/playing-wav-files-in-scala
-  private def loadClip(src: String): AudioClip = {
+  private def loadClip(src: String, name: String): AudioClip = {
     try {
       val file = getClass.getResourceAsStream(s"/sfx/${src}")
       val audioIn = AudioSystem.getAudioInputStream(file)
@@ -145,7 +142,7 @@ object SoundPlayer {
 
       val framePosition = if (src == "fire-1.wav") 40000 else 0
       isLoadingFailed = false
-      return AudioClip(clip, src, framePosition)
+      return AudioClip(clip, name, framePosition)
     } catch {
       case e: Exception =>
         println(s"Failed to load audio clip using default system clip: ${e.getMessage}")

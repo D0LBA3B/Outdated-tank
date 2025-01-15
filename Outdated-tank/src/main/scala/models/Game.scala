@@ -214,10 +214,6 @@ class Game private(val config: GameConfig) {
               t.move(dx * grid.cellSize, dy * grid.cellSize)
             }
 
-            //TODO
-            // it might be cool to have slower rotations for some tanks, and it'll reflect reality better
-            // if there's a VIII Maus against the AMX-30
-            // var rotationFactor = 1.5 * grid.cellSize
             if (pressedKeys.contains(turretLeftCode)) t.moveTurret(true)
             if (pressedKeys.contains(turretRightCode)) t.moveTurret()
             if (pressedKeys.contains(shootCode)) t.fire()
@@ -229,7 +225,6 @@ class Game private(val config: GameConfig) {
         //if one of the players is out of tanks (max 2 players for now)
         val looser = grid.players.filter(_.tanks.isEmpty)
         if(looser.nonEmpty) {
-          println("THIS IS THE END")
           showEndGame(grid.players.filter(_.tanks.nonEmpty).head)
         }
       }
