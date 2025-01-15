@@ -49,7 +49,6 @@ object SoundPlayer {
     val clip = getClip(soundId)
     if (clip != null) {
       clip.clip.setFramePosition(clip.framePosition)
-      clip.start()
       clip.clip.start()
 
       if(loop) clip.clip.loop(Clip.LOOP_CONTINUOUSLY)
