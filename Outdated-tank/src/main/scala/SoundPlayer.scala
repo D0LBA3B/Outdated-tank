@@ -4,7 +4,7 @@ import javax.sound.sampled._
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
-case class AudioClip(clip: Clip, name: String)
+case class AudioClip(clip: Clip, name: String, framePosition: Int = 0)
 
 //interesting sites:
 // https://www.sounds-resource.com/pc_computer/warthunder/
@@ -48,44 +48,45 @@ object SoundPlayer {
   def playSound(soundId: String, loop: Boolean = false): Unit = {
     val clip = getClip(soundId)
     if (clip != null) {
-      clip.setFramePosition(0)
+      clip.clip.setFramePosition(clip.framePosition)
       clip.start()
+      clip.clip.start()
 
-      if(loop) clip.loop(Clip.LOOP_CONTINUOUSLY)
+      if(loop) clip.clip.loop(Clip.LOOP_CONTINUOUSLY)
     }
   }
 
   def stopSound(soundId: String): Unit = {
-    val clip = getClip(soundId)
+    val clip = getClip(soundId).clip
     if (clip != null && clip.isRunning) {
       clip.stop()
       clip.setFramePosition(0)
     }
   }
 
-  private def getClip(soundId: String): Clip = {
+  private def getClip(soundId: String): AudioClip = {
     soundId match {
-      case "menu" => menuClips.find(_.clip.isRunning).map(_.clip).getOrElse(getRandomMenuClip())
-      case "shoot" => shootClip.clip
-      case "game" => inGameClip.clip
-      case "dpoint" => dPointClip.clip
-      case "endgame" => endGameClip.clip
+      case "menu" => menuClips.find(_.clip.isRunning).getOrElse(getRandomMenuClip())
+      case "shoot" => shootClip
+      case "game" => inGameClip
+      case "dpoint" => dPointClip
+      case "endgame" => endGameClip
       case _ => null
     }
   }
 
-  private def getRandomMenuClip(lastIndex: Int = -1): Clip = {
+  private def getRandomMenuClip(lastIndex: Int = -1): AudioClip = {
     if (menuClips.nonEmpty) {
       if(lastIndex != -1) {
         var index = 0
         do {
           index = Random.nextInt(menuClips.size)
         } while (index == lastIndex)
-        return menuClips(index).clip
+        return menuClips(index)
       }
       else {
         val randomIndex = Random.nextInt(menuClips.size)
-        return menuClips(randomIndex).clip
+        return menuClips(randomIndex)
       }
     }
     null
@@ -96,9 +97,9 @@ object SoundPlayer {
     if(currentClip != null) {
       currentClip.clip.stop()
       val nextClip = getRandomMenuClip(menuClips.indexOf(currentClip))
-      nextClip.setFramePosition(0)
-      nextClip.start()
-      nextClip.loop(Clip.LOOP_CONTINUOUSLY)
+      nextClip.clip.setFramePosition(0)
+      nextClip.clip.start()
+      nextClip.clip.loop(Clip.LOOP_CONTINUOUSLY)
     }
   }
 
@@ -121,7 +122,7 @@ object SoundPlayer {
 
       lastHitIndex = newIndex
       val chosenClip = hitsClip(newIndex)
-      chosenClip.clip.setFramePosition(0)
+      chosenClip.clip.setFramePosition(chosenClip.framePosition)
       chosenClip.clip.start()
     }
   }
@@ -132,6 +133,10 @@ object SoundPlayer {
     val audioIn = AudioSystem.getAudioInputStream(file)
     val clip = AudioSystem.getClip
     clip.open(audioIn)
-    AudioClip(clip, src)
+
+    var framePosition = 0
+    if(src == "fire-1.wav") framePosition = 40000
+
+    AudioClip(clip, src, framePosition)
   }
 }
