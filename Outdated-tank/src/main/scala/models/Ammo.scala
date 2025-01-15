@@ -2,13 +2,13 @@ package isc.game.outdatedtank.models
 
 import java.awt.Color
 
-class Ammo( var position: Position,
+class Ammo(var position: Position,
             var angle: Int,
             val damage: Int,
             var size: Int,
             var bounceLeft: Int,
             var projectileColor: Color,
-            val velocity: Int = 1,
+            var velocity: Int,
             val owner: Tank, // TODO: Remove it when ammo won't hit himself right after he shot
             var hasHitPlayer: Boolean = false) {
   private val id: String = java.util.UUID.randomUUID.toString

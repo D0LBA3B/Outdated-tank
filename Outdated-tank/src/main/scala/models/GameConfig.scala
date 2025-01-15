@@ -18,7 +18,7 @@ case class ControlsConfig(moveUp: String,
                            turretLeft: String,
                            turretRight: String)
 
-case class SpecificityConfig(name: String, fireCooldown: Long, ammoDamage: Int, ammoBounceLeft: Int, health: Int)
+case class SpecificityConfig(name: String, fireCooldown: Long, ammoDamage: Int, ammoBounceLeft: Int, ammoVelocity: Int, health: Int)
 
 case class PlayerConfig(name: String, controls: ControlsConfig, specificity: SpecificityConfig)
 
@@ -47,6 +47,7 @@ object GameConfig {
         fireCooldown = specificity.getLong("fireCooldown"),
         ammoDamage = specificity.getInt("ammoDamage"),
         ammoBounceLeft = specificity.getInt("ammoBounceLeft"),
+        ammoVelocity = specificity.getInt("ammoVelocity"),
         health = specificity.getInt("health"))
     }
 

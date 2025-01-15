@@ -17,6 +17,7 @@ class Tank(var position: Position,
   private val fireCooldown: Long = specificityConfig.fireCooldown
   private val ammoDamage: Int = specificityConfig.ammoDamage
   private val ammoBounceLeft: Int = specificityConfig.ammoBounceLeft
+  private val ammoVelocity: Int = specificityConfig.ammoVelocity
   private var lastFireAt: Long = 0
   private var turretPosition: Int = 0
 
@@ -88,7 +89,7 @@ class Tank(var position: Position,
         case "Desert" => ammoColor = new Color(190,160,100,255)
       }
 
-      val newAmmo = new Ammo(position=position.copy(), angle=turretPosition, damage = ammoDamage, size = 5, bounceLeft = ammoBounceLeft, projectileColor = ammoColor, owner = this, velocity = 3)
+      val newAmmo = new Ammo(position=position.copy(), angle=turretPosition, damage = ammoDamage, size = 5, bounceLeft = ammoBounceLeft, velocity = ammoVelocity, projectileColor = ammoColor, owner = this)
       projectiles += newAmmo
       lastFireAt = System.currentTimeMillis()
     }
