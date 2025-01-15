@@ -138,20 +138,39 @@ object SoundPlayer {
   // https://stackoverflow.com/questions/9438718/playing-wav-files-in-scala
   private def loadClip(src: String): AudioClip = {
     try {
-      val file = getClass().getResourceAsStream(s"/sfx/${src}")
+      val file = getClass.getResourceAsStream(s"/sfx/${src}")
       val audioIn = AudioSystem.getAudioInputStream(file)
       val clip = AudioSystem.getClip
       clip.open(audioIn)
 
-      var framePosition = 0
-      if (src == "fire-1.wav") framePosition = 40000
-
+      val framePosition = if (src == "fire-1.wav") 40000 else 0
+      isLoadingFailed = false
       return AudioClip(clip, src, framePosition)
-    }
-    catch {
+    } catch {
       case e: Exception =>
-        isLoadingFailed = true
+        println(s"Failed to load audio clip using default system clip: ${e.getMessage}")
     }
+
+    //if we can't open the clip with the basic audio system, we'll try to open it with one of the others on the system
+    val mixers = AudioSystem.getMixerInfo
+    for (mixerInfo <- mixers) {
+      try {
+        println(s"Trying to load audio with mixer: ${mixerInfo.getName}")
+        val file = getClass.getResourceAsStream(s"/sfx/${src}")
+        val audioIn = AudioSystem.getAudioInputStream(file)
+        val mixer = AudioSystem.getMixer(mixerInfo)
+        val clip = mixer.getLine(new DataLine.Info(classOf[Clip], audioIn.getFormat)).asInstanceOf[Clip]
+        clip.open(audioIn)
+
+        val framePosition = if (src == "fire-1.wav") 40000 else 0
+        isLoadingFailed = false
+        return AudioClip(clip, src, framePosition)
+      } catch {
+        case e: Exception =>
+          println(s"Failed with mixer: ${mixerInfo.getName}, error: ${e.getMessage}")
+      }
+    }
+    isLoadingFailed = true
     AudioClip(clip = null, name = "", framePosition = 0)
   }
 }
