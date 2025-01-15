@@ -13,10 +13,12 @@ class Grid(cells: Array[Array[Cell]]) {
   fg.displayFPS(true)
 
   def isWallAt(pos: Position, damage: Int): Boolean = {
-    val ix: Int = if (pos.x / cellSize >= mapWidth) mapWidth - 1 else pos.x / cellSize
-    val iy: Int = if (pos.y / cellSize >= mapHeight) mapHeight - 1 else pos.y / cellSize
+    var iX = pos.x / cellSize
+    var iY = pos.y / cellSize
+    if (iX >= mapWidth) iX = mapWidth - 1 else if (iX < 0) iX = 0
+    if (iY >= mapHeight) iY = mapHeight - 1 else if(iY < 0) iY = 0
 
-    cells(iy)(ix).terrain match {
+    cells(iY)(iX).terrain match {
       case wall: Wall =>
         wall.damage(damage)
         true
