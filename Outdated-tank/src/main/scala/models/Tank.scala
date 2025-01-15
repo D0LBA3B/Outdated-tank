@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage
 import java.awt.{Color, Graphics2D}
 import java.net.URL
 import javax.imageio.ImageIO
+import scala.collection.mutable.ListBuffer
+import scala.util.Random
 
 class Tank(var position: Position,
             var specificityConfig: SpecificityConfig) {
@@ -29,8 +31,15 @@ class Tank(var position: Position,
     new URL(s"https://raw.githubusercontent.com/D0LBA3B/Outdated-tank/develop/Outdated-tank/src/main/resources/${specificityConfig.name}/Bodies/body_tracks.png")
   )
 
+  val availableTurrets: ListBuffer[String] = ListBuffer(
+    "turret_01_mk1.gif",
+    "turret_02_mk1.gif",
+    "turret_02_mk2.gif",
+    "turret_02_mk4.gif",
+  )
+
   val originalTurret = ImageIO.read(
-    new URL(s"https://raw.githubusercontent.com/D0LBA3B/Outdated-tank/develop/Outdated-tank/src/main/resources/${specificityConfig.name}/Weapons/turret_01_mk1.gif")
+    new URL(s"https://raw.githubusercontent.com/D0LBA3B/Outdated-tank/develop/Outdated-tank/src/main/resources/${specificityConfig.name}/Weapons/${availableTurrets(Random.nextInt(availableTurrets.size))}")
   )
 
   // resize images to 32x32

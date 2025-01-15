@@ -118,7 +118,7 @@ class Game private(val config: GameConfig) {
             if (mouseX >= 30 && mouseX <= 30 + 60 &&
               mouseY >= menuHeight - 50 && mouseY <= menuHeight - 50 + 30) {
               // TODO find a way to clear correctly this string
-              DisplayCurrentSound(menuWindow, 30, menuHeight - 50, 60, 30, new Color(140, 129, 107, 255))
+              DisplayCurrentSound(menuWindow, 30, menuHeight - 50, 60, 20, new Color(140, 129, 107, 255))
               SoundPlayer.skipMenuClip
             }
           }
