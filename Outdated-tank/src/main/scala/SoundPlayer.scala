@@ -115,6 +115,8 @@ object SoundPlayer {
   }
 
   def playRandomHitSound(): Unit = {
+    if(isLoadingFailed) return
+
     val alreadyPlaying = hitsClip.map(_.clip).exists(_.isRunning)
 
     if (!alreadyPlaying && hitsClip.nonEmpty) {
